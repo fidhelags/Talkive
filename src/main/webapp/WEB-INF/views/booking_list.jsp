@@ -98,80 +98,196 @@
     <main class="flex-1 p-10 overflow-y-auto">
         <header class="mb-10">
             <h1 class="text-3xl font-bold text-white">Bookings <span class="text-brand-orange">List</span></h1>
-            <p class="text-text-gray mt-1 font-medium">Manage patient sessions and generate consultation reports</p>
+            <p class="text-text-gray mt-1 font-medium">Manage student sessions and generate consultation reports</p>
         </header>
 
         <div class="overflow-x-auto">
-            <table class="custom-table w-full text-left">
+
+            <table class="custom-table w-full text-left table-fixed">
+
                 <thead>
                     <tr style="background: transparent;">
-                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">Client Name</th>
-                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">Schedule</th>
-                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">Amount</th>
-                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">Status</th>
-                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest text-right">Action</th>
+
+                        <th class="w-10 text-center text-text-gray text-xs font-extrabold uppercase tracking-widest">
+                            No
+                        </th>
+
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">
+                            Student
+                        </th>
+
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">
+                            Language
+                        </th>
+
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">
+                            Schedule
+                        </th>
+
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">
+                            Amount
+                        </th>
+
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">
+                            Status
+                        </th>
+
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest text-right">
+                            Action
+                        </th>
+
                     </tr>
                 </thead>
-                <tbody>
-                    <c:forEach var="booking" items="${bookings}">
-                        <tr>
+
+                <tbody class="text-sm">
+
+                    <c:forEach var="booking" items="${bookings}" varStatus="loop">
+
+                        <tr class="hover:bg-white/5 transition">
+
+                            <!-- Number -->
+                            <td class="text-center text-text-gray font-medium">
+                                ${loop.index + 1}
+                            </td>
+
+                            <!-- Student -->
                             <td>
-                                <div class="font-bold text-white">${booking.user != null ? booking.user.name : '-'}</div>
-                                <div class="text-xs text-text-gray">${booking.user.email}</div>
+                                <div class="font-bold text-white">
+                                    ${booking.user != null ? booking.user.name : '-'}
+                                </div>
+
+                                <div class="text-xs text-text-gray">
+                                    ${booking.user.email}
+                                </div>
                             </td>
+
+                            <!-- Language -->
                             <td>
-                                <div class="text-sm font-semibold">${booking.slot.date}</div>
-                                <div class="text-xs text-brand-orange">${booking.slot.startTime} - ${booking.slot.endTime}</div>
-                            </td>
-                            <td class="text-sm font-bold">
-                                IDR <fmt:formatNumber value="${booking.slot.price}" pattern="#,###" />
-                            </td>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${booking.paymentStatus == 'COMPLETED'}">
-                                        <span class="status-pill status-completed text-[10px]">COMPLETED</span>
-                                    </c:when>
-                                    <c:when test="${booking.paymentStatus == 'PAID' || booking.paymentStatus == 'LINK_SENT'}">
-                                        <span class="status-pill status-paid text-[10px]">${booking.paymentStatus}</span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span class="status-pill status-pending text-[10px]">${booking.paymentStatus}</span>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td class="text-right">
-                                <c:if test="${booking.paymentStatus == 'PAID' or booking.paymentStatus == 'LINK_SENT' or booking.paymentStatus == 'COMPLETED'}">
-                                    <div class="flex justify-end gap-2">
+                                <div class="flex items-center gap-1.5 whitespace-nowrap">
+
+                                    <span class="text-base leading-none">
+
                                         <c:choose>
+                                            <c:when test="${booking.slot.psychiatrist.specialization == 'English'}">🇬🇧</c:when>
+                                            <c:when test="${booking.slot.psychiatrist.specialization == 'Indonesia'}">🇮🇩</c:when>
+                                            <c:when test="${booking.slot.psychiatrist.specialization == 'Japanese'}">🇯🇵</c:when>
+                                            <c:when test="${booking.slot.psychiatrist.specialization == 'Korean'}">🇰🇷</c:when>
+                                            <c:when test="${booking.slot.psychiatrist.specialization == 'Chinese'}">🇨🇳</c:when>
+                                            <c:when test="${booking.slot.psychiatrist.specialization == 'French'}">🇫🇷</c:when>
+                                            <c:when test="${booking.slot.psychiatrist.specialization == 'German'}">🇩🇪</c:when>
+                                            <c:when test="${booking.slot.psychiatrist.specialization == 'Spanish'}">🇪🇸</c:when>
+                                            <c:otherwise>🌍</c:otherwise>
+                                        </c:choose>
+
+                                    </span>
+
+                                    <span class="text-sm text-white font-medium">
+                                        ${booking.slot.psychiatrist.specialization}
+                                    </span>
+
+                                </div>
+                            </td>
+
+                            <!-- Schedule -->
+                            <td>
+                                <div class="text-sm font-semibold text-white">
+                                    ${booking.slot.date}
+                                </div>
+
+                                <div class="text-xs text-brand-orange">
+                                    ${booking.slot.startTime} - ${booking.slot.endTime}
+                                </div>
+                            </td>
+
+                            <!-- Amount -->
+                            <td class="text-sm font-bold text-green-400 whitespace-nowrap">
+                                IDR
+                                <fmt:formatNumber value="${booking.slot.price}" pattern="#,###" />
+                            </td>
+
+                            <!-- Status -->
+                            <td>
+
+                                <c:choose>
+
+                                    <c:when test="${booking.paymentStatus == 'COMPLETED'}">
+                                        <span class="status-pill status-completed text-[10px]">
+                                            COMPLETED
+                                        </span>
+                                    </c:when>
+
+                                    <c:when test="${booking.paymentStatus == 'PAID' || booking.paymentStatus == 'LINK_SENT'}">
+                                        <span class="status-pill status-paid text-[10px]">
+                                            ${booking.paymentStatus}
+                                        </span>
+                                    </c:when>
+
+                                    <c:otherwise>
+                                        <span class="status-pill status-pending text-[10px]">
+                                            ${booking.paymentStatus}
+                                        </span>
+                                    </c:otherwise>
+
+                                </c:choose>
+
+                            </td>
+
+                            <!-- Action -->
+                            <td class="text-right">
+
+                                <c:if test="${booking.paymentStatus == 'PAID' or booking.paymentStatus == 'LINK_SENT' or booking.paymentStatus == 'COMPLETED'}">
+
+                                    <div class="flex justify-end gap-2">
+
+                                        <c:choose>
+
                                             <c:when test="${booking.paymentStatus == 'COMPLETED'}">
+
                                                 <button class="px-4 py-2 rounded-xl bg-white/5 text-text-gray text-xs font-bold cursor-not-allowed" disabled>
                                                     Session End
                                                 </button>
+
                                             </c:when>
+
                                             <c:when test="${not empty booking.meetingLink}">
-                                                <a href="${booking.meetingLink}" target="_blank" 
-                                                   class="px-4 py-2 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-orange-600 transition-all">
+
+                                                <a href="${booking.meetingLink}" target="_blank"
+                                                   class="min-w-[110px] px-4 py-2 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-orange-600 transition-all whitespace-nowrap text-center">
+
                                                     Join Meeting
                                                 </a>
+
                                             </c:when>
+
                                             <c:otherwise>
+
                                                 <button onclick="openSendLinkModal('${booking.id}', '${booking.meetingLink}')"
                                                         class="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-bold hover:bg-white/20 transition-all">
+
                                                     Send Link
                                                 </button>
+
                                             </c:otherwise>
+
                                         </c:choose>
 
                                         <button onclick="openPdfForm('${booking.id}', '${booking.user.email}', '${booking.user.name}')"
                                                 class="px-4 py-2 rounded-xl bg-green-500/10 text-green-400 text-xs font-bold hover:bg-green-500 hover:text-white transition-all ${booking.paymentStatus == 'COMPLETED' ? 'opacity-50 cursor-not-allowed' : ''}"
                                                 ${booking.paymentStatus == 'COMPLETED' ? 'disabled' : ''}>
+
                                             Report
                                         </button>
+
                                     </div>
+
                                 </c:if>
+
                             </td>
+
                         </tr>
+
                     </c:forEach>
+
                 </tbody>
             </table>
         </div>
@@ -195,25 +311,98 @@
     </div>
 
     <div id="pdfFormModal" class="modal">
-        <div class="bg-brand-surface p-10 rounded-[2.5rem] max-w-lg w-full mx-4 shadow-2xl border border-white/10">
-            <h3 class="text-2xl font-bold text-white mb-2">Patient Report</h3>
-            <p class="text-text-gray text-sm mb-6 font-medium">Submit your diagnosis and clinical advice</p>
+        <div class="bg-brand-surface p-10 rounded-[2.5rem] max-w-lg w-full mx-4 shadow-2xl border border-white/10 max-h-[85vh] overflow-y-auto custom-scroll">
+
+            <h3 class="text-2xl font-bold text-white mb-2">
+                Session Report
+            </h3>
+
+            <p class="text-text-gray text-sm mb-6 font-medium">
+                Provide student progress and learning feedback
+            </p>
+
             <form id="pdfForm" method="post" class="space-y-4">
+
                 <input type="hidden" id="pdfBookingId" name="bookingId" />
                 <input type="hidden" id="pdfEmail" name="email" />
                 <input type="hidden" id="pdfName" name="name" />
+
+                <!-- Session Summary -->
                 <div>
-                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">Diagnosis</label>
-                    <textarea name="diagnosis" class="input-field h-24 mt-2" required></textarea>
+                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">
+                        Session Summary
+                    </label>
+
+                    <textarea name="sessionSummary"
+                        class="input-field h-24 mt-2"
+                        placeholder="Describe what was covered during the session..."
+                        required></textarea>
                 </div>
+
+                <!-- Student Progress -->
                 <div>
-                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">Solution / Advice</label>
-                    <textarea name="solution" class="input-field h-24 mt-2" required></textarea>
+                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">
+                        Student Progress
+                    </label>
+
+                    <textarea name="studentProgress"
+                        class="input-field h-24 mt-2"
+                        placeholder="Explain the student's performance and progress..."
+                        required></textarea>
                 </div>
+
+                <!-- Strength -->
+                <div>
+                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">
+                        Strengths
+                    </label>
+
+                    <textarea name="strengths"
+                        class="input-field h-20 mt-2"
+                        placeholder="Student strengths during the lesson..."
+                        required></textarea>
+                </div>
+
+                <!-- Areas Improvement -->
+                <div>
+                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">
+                        Areas for Improvement
+                    </label>
+
+                    <textarea name="improvement"
+                        class="input-field h-20 mt-2"
+                        placeholder="Skills that need improvement..."
+                        required></textarea>
+                </div>
+
+                <!-- Homework -->
+                <div>
+                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">
+                        Practice Recommendation
+                    </label>
+
+                    <textarea name="recommendation"
+                        class="input-field h-20 mt-2"
+                        placeholder="Suggested exercises or homework..."
+                        required></textarea>
+                </div>
+
+                <!-- Buttons -->
                 <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="closeModal('pdfFormModal')" class="flex-1 py-4 rounded-2xl bg-white/5 font-bold">Cancel</button>
-                    <button type="submit" class="flex-1 py-4 rounded-2xl bg-green-500 text-white font-bold hover:bg-green-600 transition shadow-lg shadow-green-500/20">Send Report</button>
+
+                    <button type="button"
+                        onclick="closeModal('pdfFormModal')"
+                        class="flex-1 py-4 rounded-2xl bg-white/5 font-bold">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                        class="flex-1 py-4 rounded-2xl bg-green-500 text-white font-bold hover:bg-green-600 transition shadow-lg shadow-green-500/20">
+                        Send Report
+                    </button>
+
                 </div>
+
             </form>
         </div>
     </div>

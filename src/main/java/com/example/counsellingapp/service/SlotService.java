@@ -22,4 +22,8 @@ public interface SlotService {
 
     List<Slot> findAvailableToday();
 
+    public List<Slot> findByStatusAndDate(Slot.SlotStatus slotStatus, LocalDate date);
+
+    public List<Slot> findByStatus(Slot.SlotStatus slotStatus);
+
 }

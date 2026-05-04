@@ -51,6 +51,9 @@ public class UserController {
     @GetMapping("/slots")
     public String viewAvailableSlots(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam(required = false) String language,
+            @RequestParam(required = false) String level,
+            @RequestParam(required = false) String lessonType,
             HttpSession session,
             Model model) {
 
@@ -60,9 +63,29 @@ public class UserController {
         List<Slot> slots;
         
         if (date != null) {
-            slots = slotService.findByDate(date); 
+            // Filter berdasarkan tanggal
+            slots = slotService.findByStatusAndDate(Slot.SlotStatus.AVAILABLE, date);
         } else {
-            slots = slotService.findAvailableToday();            
+            // Default: semua slot available
+            slots = slotService.findByStatus(Slot.SlotStatus.AVAILABLE);
+        }
+        
+        if (language != null && !language.isEmpty()) {
+            slots = slots.stream()
+                    .filter(s -> s.getPsychiatrist().getSpecialization().equalsIgnoreCase(language))
+                    .toList();
+        }
+
+        if (level != null && !level.isEmpty()) {
+            slots = slots.stream()
+                    .filter(s -> s.getLevel().equalsIgnoreCase(level))
+                    .toList();
+        }
+
+        if (lessonType != null && !lessonType.isEmpty()) {
+            slots = slots.stream()
+                    .filter(s -> s.getLessonType().equalsIgnoreCase(lessonType))
+                    .toList();
         }
 
         model.addAttribute("user", user); 

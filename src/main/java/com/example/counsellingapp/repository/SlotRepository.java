@@ -15,4 +15,5 @@ public interface SlotRepository extends JpaRepository<Slot, Long> {
     List<Slot> findByStatus(Slot.SlotStatus status);
     List<Slot> findByPsychiatrist(Psychiatrist psychiatrist);
     List<Slot> findByDateAndStatus(LocalDate date, Slot.SlotStatus status);
+    List<Slot> findByStatusAndDate(Slot.SlotStatus status, LocalDate date);
 }

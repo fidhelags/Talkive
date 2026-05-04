@@ -208,6 +208,10 @@ public class PsychiatristController {
             existingSlot.setStartTime(slot.getStartTime());
             existingSlot.setEndTime(slot.getEndTime());
             existingSlot.setPrice(slot.getPrice());
+            existingSlot.setDuration(slot.getDuration());
+            existingSlot.setLevel(slot.getLevel());
+            existingSlot.setLessonType(slot.getLessonType());
+            existingSlot.setDescription(slot.getDescription());
             slotService.saveSlot(existingSlot);
         }
 
@@ -272,6 +276,10 @@ public class PsychiatristController {
             @RequestParam LocalTime startTime,
             @RequestParam LocalTime endTime,
             @RequestParam Double price,
+            @RequestParam Integer duration,
+            @RequestParam String level,
+            @RequestParam String lessonType,
+            @RequestParam(required = false) String description,
             HttpSession session
     ) {
         Psychiatrist psychiatrist = (Psychiatrist) session.getAttribute("loggedInUser");
@@ -301,6 +309,10 @@ public class PsychiatristController {
             slot.setStartTime(startTime);
             slot.setEndTime(endTime);
             slot.setPrice(price.intValue());
+            slot.setDuration(duration);
+            slot.setLevel(level);
+            slot.setLessonType(lessonType);
+            slot.setDescription(description);
             slot.setPsychiatrist(psychiatrist);
 
             slotService.saveSlot(slot);

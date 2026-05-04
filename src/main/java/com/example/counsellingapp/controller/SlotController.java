@@ -49,8 +49,25 @@ public class SlotController {
 
     @PostMapping("/edit/{id}")
     public String updateSlot(@PathVariable Long id, @ModelAttribute Slot slot) {
-        slot.setId(id);
-        slotService.saveSlot(slot);
+        Optional<Slot> existingSlotOpt = slotService.findById(id);
+
+        if (existingSlotOpt.isPresent()) {
+
+            Slot existingSlot = existingSlotOpt.get();
+
+            existingSlot.setDate(slot.getDate());
+            existingSlot.setStartTime(slot.getStartTime());
+            existingSlot.setEndTime(slot.getEndTime());
+            existingSlot.setPrice(slot.getPrice());
+
+            existingSlot.setDuration(slot.getDuration());
+            existingSlot.setLevel(slot.getLevel());
+            existingSlot.setLessonType(slot.getLessonType());
+            existingSlot.setDescription(slot.getDescription());
+
+            slotService.saveSlot(existingSlot);
+        }
+
         return "redirect:/slots";
     }
 

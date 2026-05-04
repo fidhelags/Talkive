@@ -115,5 +115,35 @@ public class SlotServiceImpl implements SlotService {
             .sorted(Comparator.comparing(Slot::getStartTime))
             .toList();
     }
+    
+    @Override
+    public List<Slot> findByStatus(SlotStatus status) {
+        LocalDate today = LocalDate.now(APP_ZONE_ID);
+
+        List<Slot> slots = slotRepository.findByStatus(status);
+
+        // update slot yang sudah lewat menjadi PASSED
+        slots.forEach(slot -> {
+            if (slot.getDate().isBefore(today) && slot.getStatus() == SlotStatus.AVAILABLE) {
+                slot.setStatus(SlotStatus.PASSED);
+                slotRepository.save(slot);
+            }
+        });
+
+        // hanya tampilkan slot hari ini & masa depan
+        return slots.stream()
+                .filter(slot -> !slot.getDate().isBefore(today))
+                .sorted(Comparator.comparing(Slot::getDate)
+                        .thenComparing(Slot::getStartTime))
+                .toList();
+    }
+    
+    @Override
+    public List<Slot> findByStatusAndDate(SlotStatus status, LocalDate date) {
+        return slotRepository.findByStatusAndDate(status, date)
+                .stream()
+                .sorted(Comparator.comparing(Slot::getStartTime))
+                .toList();
+    }
 
 }

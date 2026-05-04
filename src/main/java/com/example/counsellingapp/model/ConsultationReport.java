@@ -15,34 +15,86 @@ public class ConsultationReport {
     @JoinColumn(name = "booking_id", nullable = false, unique = true)
     private Booking booking;
 
-    @Column(name = "diagnosis")
-    private String diagnosis;
+    @Column(name = "session_summary", columnDefinition = "TEXT")
+    private String sessionSummary;
 
-    @Column(name = "solution")
-    private String solution;
+    @Column(name = "student_progress", columnDefinition = "TEXT")
+    private String studentProgress;
 
-    @Column(name = "notes")
-    private String notes;
+    @Column(name = "strengths", columnDefinition = "TEXT")
+    private String strengths;
+
+    @Column(name = "improvement", columnDefinition = "TEXT")
+    private String improvement;
+
+    @Column(name = "recommendation", columnDefinition = "TEXT")
+    private String recommendation;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Getter & Setter
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Getter Setter
+    public Long getId() {
+        return id;
+    }
 
-    public Booking getBooking() { return booking; }
-    public void setBooking(Booking booking) { this.booking = booking; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getDiagnosis() { return diagnosis; }
-    public void setDiagnosis(String diagnosis) { this.diagnosis = diagnosis; }
+    public Booking getBooking() {
+        return booking;
+    }
 
-    public String getSolution() { return solution; }
-    public void setSolution(String solution) { this.solution = solution; }
+    public void setBooking(Booking booking) {
+        this.booking = booking;
+    }
 
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public String getSessionSummary() {
+        return sessionSummary;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setSessionSummary(String sessionSummary) {
+        this.sessionSummary = sessionSummary;
+    }
+
+    public String getStudentProgress() {
+        return studentProgress;
+    }
+
+    public void setStudentProgress(String studentProgress) {
+        this.studentProgress = studentProgress;
+    }
+
+    public String getStrengths() {
+        return strengths;
+    }
+
+    public void setStrengths(String strengths) {
+        this.strengths = strengths;
+    }
+
+    public String getImprovement() {
+        return improvement;
+    }
+
+    public void setImprovement(String improvement) {
+        this.improvement = improvement;
+    }
+
+    public String getRecommendation() {
+        return recommendation;
+    }
+
+    public void setRecommendation(String recommendation) {
+        this.recommendation = recommendation;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }

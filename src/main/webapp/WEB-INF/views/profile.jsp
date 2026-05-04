@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Psychiatrist Profile - Talkive</title>
+    <title>Native Tutor Profile - Talkive</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -132,9 +132,30 @@
                     </div>
 
                     <div class="flex flex-col space-y-2 md:col-span-2">
-                        <label class="text-xs font-extrabold text-text-gray uppercase tracking-widest ml-1">Specialization (e.g. Indonesia, English)</label>
-                        <input type="text" name="specialization" value="${psychiatrist.specialization}" placeholder="Language specialization" required
-                            class="form-input rounded-2xl px-5 py-4 text-sm font-medium">
+                        <label class="text-xs font-extrabold text-text-gray uppercase tracking-widest ml-1">
+                            Language Specialization
+                        </label>
+
+                        <div class="flex items-center gap-3">
+
+                            <!-- Dropdown -->
+                            <select name="specialization" id="editLanguageSelect" required
+                                class="form-input rounded-2xl px-5 py-4 text-sm font-medium text-white/90 bg-brand-dark border border-white/5 appearance-none w-full">
+
+                                <option value="" disabled ${empty psychiatrist.specialization ? 'selected' : ''}>
+                                    Language specialization
+                                </option>
+
+                                <option value="English" ${psychiatrist.specialization == 'English' ? 'selected' : ''}>🇬🇧 English</option>
+                                <option value="Indonesia" ${psychiatrist.specialization == 'Indonesia' ? 'selected' : ''}>🇮🇩 Indonesia</option>
+                                <option value="Japanese" ${psychiatrist.specialization == 'Japanese' ? 'selected' : ''}>🇯🇵 Japanese</option>
+                                <option value="Korean" ${psychiatrist.specialization == 'Korean' ? 'selected' : ''}>🇰🇷 Korean</option>
+                                <option value="Chinese" ${psychiatrist.specialization == 'Chinese' ? 'selected' : ''}>🇨🇳 Chinese</option>
+                                <option value="French" ${psychiatrist.specialization == 'French' ? 'selected' : ''}>🇫🇷 French</option>
+                                <option value="German" ${psychiatrist.specialization == 'German' ? 'selected' : ''}>🇩🇪 German</option>
+                                <option value="Spanish" ${psychiatrist.specialization == 'Spanish' ? 'selected' : ''}>🇪🇸 Spanish</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="flex flex-col space-y-2 md:col-span-2">

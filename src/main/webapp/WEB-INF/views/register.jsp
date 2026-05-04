@@ -144,9 +144,59 @@
                     <input type="number" name="yearsExperience" placeholder="Years Exp" min="0"
                         class="h-12 px-4 rounded-xl border border-white/5 bg-brand-dark text-sm text-white font-medium outline-none transition-all focus-orange" />
                 </div>
-                <input type="text" name="specialization" placeholder="Specialization (e.g. Indonesia, English)" 
-                    class="w-full h-12 px-4 rounded-xl border border-white/5 bg-brand-dark text-sm text-white font-medium outline-none transition-all focus-orange" />
+                <div class="relative">
+                    <label class="block text-sm text-gray-300 mb-2">
+                        Native Tutor Language
+                    </label>
+
+                    <div class="flex items-center gap-3">
+                        <!-- Logo bahasa -->
+                        <div id="languageIcon"
+                            class="w-12 h-12 flex items-center justify-center rounded-xl bg-brand-dark border border-white/5 text-2xl">
+                            🌍
+                        </div>
+
+                        <!-- Dropdown -->
+                        <select name="specialization" id="languageSelect"
+                            class="w-full h-12 px-4 rounded-xl border border-white/5 bg-brand-dark text-sm text-white/70 font-medium outline-none transition-all focus-orange appearance-none">
+
+                            <option value="" disabled selected hidden>
+                                Language Tutor
+                            </option>
+
+                            <option value="English">🇬🇧 English</option>
+                            <option value="Indonesia">🇮🇩 Indonesia</option>
+                            <option value="Japanese">🇯🇵 Japanese</option>
+                            <option value="Korean">🇰🇷 Korean</option>
+                            <option value="Chinese">🇨🇳 Chinese</option>
+                            <option value="French">🇫🇷 French</option>
+                            <option value="German">🇩🇪 German</option>
+                            <option value="Spanish">🇪🇸 Spanish</option>
+                        </select>
+                    </div>
+                </div>
             </div>
+            
+    <script>
+        const languageSelect = document.getElementById('languageSelect');
+        const languageIcon = document.getElementById('languageIcon');
+
+        const flags = {
+            "English": "🇬🇧",
+            "Indonesia": "🇮🇩",
+            "Japanese": "🇯🇵",
+            "Korean": "🇰🇷",
+            "Chinese": "🇨🇳",
+            "French": "🇫🇷",
+            "German": "🇩🇪",
+            "Spanish": "🇪🇸"
+        };
+
+        languageSelect.addEventListener('change', function () {
+            languageIcon.textContent = flags[this.value];
+        });
+    </script>
+            
 
             <button type="submit" class="h-14 bg-brand-orange text-white text-base font-bold rounded-2xl mt-4 hover:bg-orange-600 active:scale-[0.98] transition-all shadow-xl shadow-orange-500/20">
                 Create Account

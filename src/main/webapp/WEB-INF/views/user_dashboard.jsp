@@ -151,87 +151,209 @@
             </div>
 
             <div class="bg-brand-surface rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
-                <table class="custom-table w-full text-left border-collapse">
-                    <thead>
-                        <tr>
-                            <th>Native Tutor</th>
-                            <th>Date & Time</th>
-                            <th>Investment</th>
-                            <th class="text-center">Status</th>
-                            <th class="text-center">Meeting</th>
-                            <th class="text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-sm">
-                        <c:forEach var="booking" items="${bookings}">
-                            <tr class="hover:bg-white/5 transition-colors">
-                                <td class="font-bold text-white">
-                                    <c:out value="${booking.slot.psychiatrist.name}" />
-                                </td>
-                                <td class="text-text-gray">
-                                    <div class="text-white font-medium"><c:out value="${booking.slot.date}" /></div>
-                                    <div class="text-[11px]"><c:out value="${booking.slot.startTime}" /> - <c:out value="${booking.slot.endTime}" /></div>
-                                </td>
-                                <td class="text-white font-semibold">
-                                    IDR <fmt:formatNumber value="${booking.slot.price}" type="number" groupingUsed="true" />
-                                </td>
-                                <td class="text-center">
-                                    <c:choose>
-                                        <c:when test="${booking.paymentStatus == 'PAID' or booking.paymentStatus == 'COMPLETED'}">
-                                            <span class="status-pill paid">SUCCESS</span>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="status-pill pending"><c:out value="${booking.paymentStatus}" /></span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-                                <td class="text-center">
-                                    <c:choose>
-                                        <c:when test="${(booking.paymentStatus == 'PAID' or booking.paymentStatus == 'LINK_SENT') and not empty booking.meetingLink}">
-                                            <a href="${booking.meetingLink}" target="_blank"
-                                                class="inline-block bg-brand-orange text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-600 transition shadow-lg shadow-orange-500/20">
-                                                Join Call
-                                            </a>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <span class="text-gray-600 italic text-xs">Waiting for Link</span>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </td>
-                                <td class="text-right">
-                                    <c:choose>
-                                        <c:when test="${booking.paymentStatus == 'PAID' or booking.paymentStatus == 'COMPLETED'}">
-                                            <c:if test="${not empty booking.consultationReport}"> 
-                                                <a href="<c:url value='/user/bookings/${booking.id}/pdf/view'/>"
-                                                    class="text-brand-orange hover:underline font-bold text-xs">View Report</a>
-                                            </c:if>
-                                            <c:if test="${empty booking.consultationReport}">
-                                                <span class="text-gray-600 text-xs italic">No Report</span>
-                                            </c:if>
-                                        </c:when>
-                                        <c:when test="${booking.paymentStatus == 'PENDING'}">
-                                            <a href="<c:url value='/user/bookings/${booking.id}/pay'/>"
-                                                class="bg-white text-brand-dark px-4 py-2 rounded-xl text-xs font-bold hover:bg-gray-200 transition">
-                                                Complete Payment
-                                            </a>
-                                        </c:when>
-                                    </c:choose>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                        
-                        <c:if test="${fn:length(bookings) == 0}">
+
+                <div>
+                    <table class="custom-table w-full text-center table-fixed">
+
+                        <thead>
                             <tr>
-                                <td colspan="6" class="text-center py-20">
-                                    <div class="text-gray-600">
-                                        <p class="text-lg font-bold mb-1">No bookings found</p>
-                                        <p class="text-sm">Start your journey by booking a session.</p>
-                                    </div>
-                                </td>
+                                <th class="w-8">No</th>
+                                <th class="w-[15%]">Tutor</th>
+                                <th class="w-[10%]">Language</th>
+                                <th class="w-[15%]">Schedule</th>
+                                <th class="w-[10%]">Level</th>
+                                <th class="w-[12%]">Lesson</th>
+                                <th class="w-[10%]">Price</th>
+                                <th class="w-[10%]">Status</th>
+                                <th class="w-[15%]">Description</th>
+                                <th class="w-[15%]">Action</th>
                             </tr>
-                        </c:if>
-                    </tbody>
-                </table>
+                        </thead>
+
+                        <tbody class="text-sm">
+
+                            <c:forEach var="booking" items="${bookings}" varStatus="loop">
+
+                                <tr class="hover:bg-white/5 transition-colors">
+
+                                    <!-- Number -->
+                                    <td class="text-center text-text-gray font-medium">
+                                        ${loop.index + 1}
+                                    </td>
+
+                                    <!-- Tutor -->
+                                    <td class="font-bold text-white">
+                                        <div>${booking.slot.psychiatrist.name}</div>
+                                        <div class="text-[11px] text-text-gray font-normal">
+                                            Native Tutor
+                                        </div>
+                                    </td>
+
+                                    <!-- Language -->
+                                    <td>
+                                        <div class="flex items-center gap-1.5 whitespace-nowrap">
+
+                                            <span class="text-base leading-none">
+                                                <c:choose>
+                                                    <c:when test="${booking.slot.psychiatrist.specialization == 'English'}">🇬🇧</c:when>
+                                                    <c:when test="${booking.slot.psychiatrist.specialization == 'Indonesia'}">🇮🇩</c:when>
+                                                    <c:when test="${booking.slot.psychiatrist.specialization == 'Japanese'}">🇯🇵</c:when>
+                                                    <c:when test="${booking.slot.psychiatrist.specialization == 'Korean'}">🇰🇷</c:when>
+                                                    <c:when test="${booking.slot.psychiatrist.specialization == 'Chinese'}">🇨🇳</c:when>
+                                                    <c:when test="${booking.slot.psychiatrist.specialization == 'French'}">🇫🇷</c:when>
+                                                    <c:when test="${booking.slot.psychiatrist.specialization == 'German'}">🇩🇪</c:when>
+                                                    <c:when test="${booking.slot.psychiatrist.specialization == 'Spanish'}">🇪🇸</c:when>
+                                                    <c:otherwise>🌍</c:otherwise>
+                                                </c:choose>
+                                            </span>
+
+                                            <span class="text-sm text-white font-medium">
+                                                ${booking.slot.psychiatrist.specialization}
+                                            </span>
+
+                                        </div>
+                                    </td>
+
+                                    <!-- Schedule -->
+                                    <td class="text-text-gray">
+                                        <div class="text-white font-medium">
+                                            ${booking.slot.date}
+                                        </div>
+
+                                        <div class="text-[11px]">
+                                            ${booking.slot.startTime} - ${booking.slot.endTime}
+                                        </div>
+                                    </td>
+
+                                    <!-- Level -->
+                                    <td>
+                                        <span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-xs font-bold">
+                                            ${booking.slot.level}
+                                        </span>
+                                    </td>
+
+                                    <!-- Lesson -->
+                                    <td class="text-white font-medium">
+                                        ${booking.slot.lessonType}
+                                    </td>
+
+
+                                    <!-- Price -->
+                                    <td class="text-white font-semibold whitespace-nowrap">
+                                        IDR
+                                        <fmt:formatNumber value="${booking.slot.price}" type="number" groupingUsed="true" />
+                                    </td>
+
+                                    <!-- Status -->
+                                    <td class="text-center">
+                                        <c:choose>
+
+                                            <c:when test="${booking.paymentStatus == 'PAID' or booking.paymentStatus == 'COMPLETED'}">
+                                                <span class="status-pill paid">
+                                                    SUCCESS
+                                                </span>
+                                            </c:when>
+
+                                            <c:otherwise>
+                                                <span class="status-pill pending">
+                                                    ${booking.paymentStatus}
+                                                </span>
+                                            </c:otherwise>
+
+                                        </c:choose>
+                                    </td>
+
+                                    <!-- Meeting -->
+                                    <td class="text-center">
+
+                                        <c:choose>
+
+                                            <c:when test="${(booking.paymentStatus == 'PAID' or booking.paymentStatus == 'LINK_SENT') and not empty booking.meetingLink}">
+
+                                                <a href="${booking.meetingLink}" target="_blank"
+                                                    class="inline-block bg-brand-orange text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-orange-600 transition shadow-lg shadow-orange-500/20">
+
+                                                    Join Call
+                                                </a>
+
+                                            </c:when>
+
+                                            <c:otherwise>
+                                                <span class="text-gray-600 italic text-xs">
+                                                    Waiting for Link
+                                                </span>
+                                            </c:otherwise>
+
+                                        </c:choose>
+
+                                    </td>
+
+                                    <!-- Description -->
+                                    <td class="max-w-[220px] truncate text-text-gray text-xs">
+                                        ${booking.slot.description}
+                                    </td>
+
+                                    <!-- Action -->
+                                    <td class="text-right">
+
+                                        <c:choose>
+
+                                            <c:when test="${booking.paymentStatus == 'PAID' or booking.paymentStatus == 'COMPLETED'}">
+
+                                                <c:if test="${not empty booking.consultationReport}">
+                                                    <a href="<c:url value='/user/bookings/${booking.id}/pdf/view'/>"
+                                                        class="text-brand-orange hover:underline font-bold text-xs">
+                                                        View Report
+                                                    </a>
+                                                </c:if>
+
+                                                <c:if test="${empty booking.consultationReport}">
+                                                    <span class="text-gray-600 text-xs italic">
+                                                        No Report
+                                                    </span>
+                                                </c:if>
+
+                                            </c:when>
+
+                                            <c:when test="${booking.paymentStatus == 'PENDING'}">
+
+                                                <a href="<c:url value='/user/bookings/${booking.id}/pay'/>"
+                                                    class="bg-white text-brand-dark px-4 py-2 rounded-xl text-xs font-bold hover:bg-gray-200 transition">
+
+                                                    Complete Payment
+                                                </a>
+
+                                            </c:when>
+
+                                        </c:choose>
+
+                                    </td>
+
+                                </tr>
+
+                            </c:forEach>
+
+                            <c:if test="${fn:length(bookings) == 0}">
+                                <tr>
+                                    <td colspan="12" class="text-center py-20">
+
+                                        <div class="text-gray-600">
+                                            <p class="text-lg font-bold mb-1">
+                                                No bookings found
+                                            </p>
+
+                                            <p class="text-sm">
+                                                Start your journey by booking a session.
+                                            </p>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </c:if>
+
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
     </main>

@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Psychiatrist Dashboard - Talkive</title>
+    <title>Native Tutor Dashboard - Talkive</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -116,54 +116,137 @@
         <section class="card mb-12">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-bold">Your Schedule Slots</h2>
+
                 <div class="flex gap-3">
-                    <button onclick="toggleModal('addSlotModal')" class="bg-brand-orange/10 text-brand-orange px-4 py-2 rounded-xl text-sm font-bold hover:bg-brand-orange hover:text-white transition">
+                    <button onclick="toggleModal('addSlotModal')"
+                        class="bg-brand-orange/10 text-brand-orange px-4 py-2 rounded-xl text-sm font-bold hover:bg-brand-orange hover:text-white transition">
                         + Single Slot
                     </button>
-                    <button onclick="toggleModal('addSlotRangeModal')" class="bg-brand-orange text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition">
+
+                    <button onclick="toggleModal('addSlotRangeModal')"
+                        class="bg-brand-orange text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition">
                         + Batch Slots
                     </button>
                 </div>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left">
+                <table class="custom-table w-full text-center table-fixed">
+
                     <thead class="text-text-gray text-xs uppercase tracking-widest border-b border-white/5">
                         <tr>
                             <th class="pb-4 px-2">Date</th>
                             <th class="pb-4">Time</th>
+                            <th class="pb-4">Duration</th>
+                            <th class="pb-4">Level</th>
+                            <th class="pb-4">Lesson</th>
                             <th class="pb-4">Price</th>
                             <th class="pb-4">Status</th>
+                            <th class="pb-4">Description</th>
                             <th class="pb-4 text-right">Action</th>
                         </tr>
                     </thead>
+
                     <tbody class="text-sm divide-y divide-white/5">
+
                         <c:forEach var="slot" items="${slots}">
                             <tr class="hover:bg-white/[0.02] transition">
-                                <td class="py-4 px-2 font-medium">${slot.date}</td>
-                                <td class="py-4">${slot.startTime} - ${slot.endTime}</td>
-                                <td class="py-4 font-bold text-green-400">IDR <fmt:formatNumber value="${slot.price}" pattern="#,###"/></td>
+
+                                <!-- Date -->
+                                <td class="py-4 px-2 font-medium whitespace-nowrap">
+                                    ${slot.date}
+                                </td>
+
+                                <!-- Time -->
+                                <td class="py-4 whitespace-nowrap">
+                                    ${slot.startTime} - ${slot.endTime}
+                                </td>
+
+                                <!-- Duration -->
                                 <td class="py-4">
-                                    <span class="px-3 py-1 rounded-full text-[10px] font-extrabold ${slot.status == 'AVAILABLE' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}">
+                                    <span class="bg-white/5 px-3 py-1 rounded-full text-xs">
+                                        ${slot.duration} min
+                                    </span>
+                                </td>
+
+                                <!-- Level -->
+                                <td class="py-4">
+                                    <span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-xs font-bold">
+                                        ${slot.level}
+                                    </span>
+                                </td>
+
+                                <!-- Lesson -->
+                                <td class="py-4 font-medium">
+                                    ${slot.lessonType}
+                                </td>
+
+                                <!-- Price -->
+                                <td class="py-4 font-bold text-green-400 whitespace-nowrap">
+                                    IDR
+                                    <fmt:formatNumber value="${slot.price}" pattern="#,###"/>
+                                </td>
+
+                                <!-- Status -->
+                                <td class="py-4">
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-extrabold
+                                        ${slot.status == 'AVAILABLE' ? 'bg-green-500/10 text-green-400' :
+                                          slot.status == 'BOOKED' ? 'bg-red-500/10 text-red-400' :
+                                          'bg-yellow-500/10 text-yellow-400'}">
+
                                         ${slot.status}
                                     </span>
                                 </td>
-                                <td class="py-4 text-right">
-                                    <div class="flex justify-end gap-2">
-                                        <button onclick="openEditSlotModal('${slot.id}', '${slot.date}', '${slot.startTime}', '${slot.endTime}', '${slot.price}')" 
-                                                class="text-text-gray hover:text-white p-2 text-xs font-bold bg-white/5 rounded-lg transition">Edit</button>
-                                        <a href="<c:url value='/psychiatrist/slots/delete/${slot.id}'/>" 
-                                           onclick="return confirm('Delete this slot?')"
-                                           class="text-red-400 hover:bg-red-500/10 p-2 text-xs font-bold rounded-lg transition">Delete</a>
+
+                                <!-- Description -->
+                                <td class="max-w-[260px] text-text-gray text-xs">
+                                    <div class="line-clamp-2" title="${slot.description}">
+                                        ${slot.description}
                                     </div>
                                 </td>
+
+                                <!-- Action -->
+                                <td class="py-4 text-center">
+                                    <div class="flex justify-end gap-2">
+
+                                        <button
+                                            onclick="openEditSlotModal(
+                                                '${slot.id}',
+                                                '${slot.date}',
+                                                '${slot.startTime}',
+                                                '${slot.endTime}',
+                                                '${slot.price}',
+                                                '${slot.level}',
+                                                '${slot.lessonType}',
+                                                '${slot.duration}',
+                                                '${slot.description}'
+                                            )"
+
+                                            class="text-text-gray hover:text-white p-2 text-xs font-bold bg-white/5 rounded-lg transition">
+                                            Edit
+                                        </button>
+
+                                        <a href="<c:url value='/psychiatrist/slots/delete/${slot.id}'/>"
+                                           onclick="return confirm('Delete this slot?')"
+                                           class="text-red-400 hover:bg-red-500/10 p-2 text-xs font-bold rounded-lg transition">
+                                            Delete
+                                        </a>
+
+                                    </div>
+                                </td>
+
                             </tr>
                         </c:forEach>
+
                         <c:if test="${empty slots}">
                             <tr>
-                                <td colspan="5" class="py-10 text-center text-text-gray italic">No slots available. Create one to start receiving bookings.</td>
+                                <td colspan="9"
+                                    class="py-10 text-center text-text-gray italic">
+                                    No slots available. Create one to start receiving bookings.
+                                </td>
                             </tr>
                         </c:if>
+
                     </tbody>
                 </table>
             </div>
@@ -171,62 +254,429 @@
     </main>
 
     <div id="addSlotModal" class="modal">
-        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10">
+        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10 max-h-[85vh] overflow-y-auto custom-scroll">
             <h3 class="text-xl font-bold mb-6 text-brand-orange">Add Single Slot</h3>
             <form action="<c:url value='/psychiatrist/slots'/>" method="post" class="space-y-4">
-                <div><label class="text-xs font-bold text-text-gray">Date</label><input type="date" name="date" class="input-field" required></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs font-bold text-text-gray">Start</label><input type="time" name="startTime" class="input-field" required></div>
-                    <div><label class="text-xs font-bold text-text-gray">End</label><input type="time" name="endTime" class="input-field" required></div>
+
+                <!-- Date -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Date</label>
+                    <input type="date" name="date" class="input-field" required>
                 </div>
-                <div><label class="text-xs font-bold text-text-gray">Price (IDR)</label><input type="number" name="price" class="input-field" required></div>
+
+                <!-- Start Time -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Start Time</label>
+                    <input type="time" name="startTime" id="startTime" class="input-field" required>
+                </div>
+
+                <!-- Duration -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Duration</label>
+
+                    <select name="duration" id="durationSelect" class="input-field" required>
+                        <option value="" disabled selected>Select Duration</option>
+                        <option value="30">30 Minutes</option>
+                        <option value="45">45 Minutes</option>
+                        <option value="60">60 Minutes</option>
+                        <option value="90">90 Minutes</option>
+                        <option value="120">120 Minutes</option>
+                    </select>
+                </div>
+
+                <!-- End Time Auto -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">End Time</label>
+                    <input type="time" name="endTime" id="endTime" class="input-field bg-white/5" readonly required>
+                </div>
+
+                <!-- Level -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Level</label>
+
+                    <select name="level" class="input-field" required>
+                        <option value="" disabled selected>Select Level</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <!-- Lesson Type -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Lesson Type</label>
+
+                    <select name="lessonType" class="input-field" required>
+                        <option value="" disabled selected>Select Lesson Type</option>
+                        <option value="Conversation">Conversation</option>
+                        <option value="Grammar">Grammar</option>
+                        <option value="Pronunciation">Pronunciation</option>
+                        <option value="Vocabulary">Vocabulary</option>
+                        <option value="Speaking Practice">Speaking Practice</option>
+                        <option value="Exam Preparation">Exam Preparation</option>
+                        <option value="Business Language">Business Language</option>
+                        <option value="Kids Learning">Kids Learning</option>
+                    </select>
+                </div>
+
+                <!-- Price -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Price (IDR)</label>
+
+                    <input type="number"
+                        name="price"
+                        class="input-field"
+                        required
+                        min="0"
+                        step="1000"
+                        oninvalid="this.setCustomValidity('Please enter numbers only')"
+                        oninput="this.setCustomValidity('')">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Lesson Description</label>
+
+                    <textarea name="description"
+                        rows="3"
+                        placeholder="Describe what students will learn..."
+                        class="input-field resize-none"></textarea>
+                </div>
+
+                <!-- Buttons -->
                 <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="toggleModal('addSlotModal')" class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold">Cancel</button>
-                    <button type="submit" class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold">Save Slot</button>
+                    <button type="button"
+                        onclick="toggleModal('addSlotModal')"
+                        class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                        class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold">
+                        Save Slot
+                    </button>
                 </div>
+
             </form>
         </div>
     </div>
+            
+    <script>
+        const startTime = document.getElementById('startTime');
+        const durationSelect = document.getElementById('durationSelect');
+        const endTime = document.getElementById('endTime');
+
+        function calculateEndTime() {
+            const start = startTime.value;
+            const duration = durationSelect.value;
+
+            if (!start || !duration) return;
+
+            const [hours, minutes] = start.split(':').map(Number);
+
+            const totalMinutes = (hours * 60) + minutes + parseInt(duration);
+
+            const endHours = Math.floor(totalMinutes / 60) % 24;
+            const endMinutes = totalMinutes % 60;
+
+            const formatted =
+                String(endHours).padStart(2, '0') + ':' +
+                String(endMinutes).padStart(2, '0');
+
+            endTime.value = formatted;
+        }
+
+        startTime.addEventListener('change', calculateEndTime);
+        durationSelect.addEventListener('change', calculateEndTime);
+    </script>
 
     <div id="editSlotModal" class="modal">
-        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10">
-            <h3 class="text-xl font-bold mb-6 text-brand-orange">Update Slot</h3>
+        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10 max-h-[85vh] overflow-y-auto custom-scroll">
+
+            <h3 class="text-xl font-bold mb-6 text-brand-orange">
+                Update Slot
+            </h3>
+
             <form id="editForm" method="post" class="space-y-4">
+
                 <input type="hidden" name="id" id="editId">
-                <div><label class="text-xs font-bold text-text-gray">Date</label><input type="date" name="date" id="editDate" class="input-field" required></div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs font-bold text-text-gray">Start</label><input type="time" name="startTime" id="editStartTime" class="input-field" required></div>
-                    <div><label class="text-xs font-bold text-text-gray">End</label><input type="time" name="endTime" id="editEndTime" class="input-field" required></div>
+
+                <!-- Date -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Date</label>
+                    <input type="date" name="date" id="editDate" class="input-field" required>
                 </div>
-                <div><label class="text-xs font-bold text-text-gray">Price (IDR)</label><input type="number" name="price" id="editPrice" class="input-field" required></div>
+
+                <!-- Start -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Start Time</label>
+                    <input type="time" name="startTime" id="editStartTime" class="input-field" required>
+                </div>
+
+                <!-- Duration -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Duration</label>
+
+                    <select name="duration" id="editDuration" class="input-field" required>
+                        <option value="">Select Duration</option>
+                        <option value="30">30 Minutes</option>
+                        <option value="45">45 Minutes</option>
+                        <option value="60">60 Minutes</option>
+                        <option value="90">90 Minutes</option>
+                        <option value="120">120 Minutes</option>
+                    </select>
+                </div>
+
+                <!-- End -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">End Time</label>
+                    <input type="time" name="endTime" id="editEndTime"
+                        class="input-field bg-white/5" readonly required>
+                </div>
+
+                <!-- Level -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Level</label>
+
+                    <select name="level" id="editLevel" class="input-field" required>
+                        <option value="">Select Level</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <!-- Lesson Type -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Lesson Type</label>
+
+                    <select name="lessonType" id="editLessonType" class="input-field" required>
+                        <option value="">Select Lesson Type</option>
+                        <option value="Conversation">Conversation</option>
+                        <option value="Grammar">Grammar</option>
+                        <option value="Pronunciation">Pronunciation</option>
+                        <option value="Vocabulary">Vocabulary</option>
+                        <option value="Speaking Practice">Speaking Practice</option>
+                        <option value="Exam Preparation">Exam Preparation</option>
+                        <option value="Business Language">Business Language</option>
+                        <option value="Kids Learning">Kids Learning</option>
+                    </select>
+                </div>
+
+                <!-- Price -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Price (IDR)</label>
+
+                    <input type="number"
+                        name="price"
+                        id="editPrice"
+                        class="input-field"
+                        required
+                        min="0"
+                        step="1000">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Lesson Description</label>
+
+                    <textarea name="description"
+                        id="editDescription"
+                        rows="3"
+                        class="input-field resize-none"></textarea>
+                </div>
+
+                <!-- Buttons -->
                 <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="toggleModal('editSlotModal')" class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold">Cancel</button>
-                    <button type="submit" class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold">Update Slot</button>
+                    <button type="button"
+                        onclick="toggleModal('editSlotModal')"
+                        class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                        class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold">
+                        Update Slot
+                    </button>
                 </div>
+
             </form>
         </div>
     </div>
+    
+    <script>
+        const editStartTime = document.getElementById('editStartTime');
+        const editDuration = document.getElementById('editDuration');
+        const editEndTime = document.getElementById('editEndTime');
+
+        function calculateEditEndTime() {
+
+            const start = editStartTime.value;
+            const duration = editDuration.value;
+
+            if (!start || !duration) return;
+
+            const [hours, minutes] = start.split(':').map(Number);
+
+            const totalMinutes = (hours * 60) + minutes + parseInt(duration);
+
+            const endHours = Math.floor(totalMinutes / 60) % 24;
+            const endMinutes = totalMinutes % 60;
+
+            editEndTime.value =
+                String(endHours).padStart(2, '0') + ':' +
+                String(endMinutes).padStart(2, '0');
+        }
+
+        editStartTime.addEventListener('change', calculateEditEndTime);
+        editDuration.addEventListener('change', calculateEditEndTime);
+    </script>
 
     <div id="addSlotRangeModal" class="modal">
-        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10">
-            <h3 class="text-xl font-bold mb-6 text-brand-orange">Add Slots by Range</h3>
+        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10 max-h-[85vh] overflow-y-auto custom-scroll">
+
+            <h3 class="text-xl font-bold mb-6 text-brand-orange">
+                Add Slots by Range
+            </h3>
+
             <form action="<c:url value='/psychiatrist/slots/range'/>" method="post" class="space-y-4">
+
+                <!-- Date Range -->
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs font-bold text-text-gray">Start Date</label><input type="date" name="startDate" class="input-field" required></div>
-                    <div><label class="text-xs font-bold text-text-gray">End Date</label><input type="date" name="endDate" class="input-field" required></div>
+                    <div>
+                        <label class="text-xs font-bold text-text-gray">Start Date</label>
+                        <input type="date" name="startDate" class="input-field" required>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-bold text-text-gray">End Date</label>
+                        <input type="date" name="endDate" class="input-field" required>
+                    </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-xs font-bold text-text-gray">Start Time</label><input type="time" name="startTime" class="input-field" required></div>
-                    <div><label class="text-xs font-bold text-text-gray">End Time</label><input type="time" name="endTime" class="input-field" required></div>
+
+                <!-- Start Time -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Start Time</label>
+                    <input type="time" name="startTime" id="rangeStartTime" class="input-field" required>
                 </div>
-                <div><label class="text-xs font-bold text-text-gray">Daily Price</label><input type="number" name="price" class="input-field" required></div>
+
+                <!-- Duration -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Duration</label>
+
+                    <select name="duration" id="rangeDuration" class="input-field" required>
+                        <option value="" disabled selected>Select Duration</option>
+                        <option value="30">30 Minutes</option>
+                        <option value="45">45 Minutes</option>
+                        <option value="60">60 Minutes</option>
+                        <option value="90">90 Minutes</option>
+                        <option value="120">120 Minutes</option>
+                    </select>
+                </div>
+
+                <!-- End Time Auto -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">End Time</label>
+                    <input type="time" name="endTime" id="rangeEndTime"
+                        class="input-field bg-white/5" readonly required>
+                </div>
+
+                <!-- Level -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Level</label>
+
+                    <select name="level" class="input-field" required>
+                        <option value="" disabled selected>Select Level</option>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <!-- Lesson Type -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Lesson Type</label>
+
+                    <select name="lessonType" class="input-field" required>
+                        <option value="" disabled selected>Select Lesson Type</option>
+                        <option value="Conversation">Conversation</option>
+                        <option value="Grammar">Grammar</option>
+                        <option value="Pronunciation">Pronunciation</option>
+                        <option value="Vocabulary">Vocabulary</option>
+                        <option value="Speaking Practice">Speaking Practice</option>
+                        <option value="Exam Preparation">Exam Preparation</option>
+                        <option value="Business Language">Business Language</option>
+                        <option value="Kids Learning">Kids Learning</option>
+                    </select>
+                </div>
+
+                <!-- Price -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Daily Price</label>
+
+                    <input type="number"
+                        name="price"
+                        class="input-field"
+                        required
+                        min="0"
+                        step="1000">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="text-xs font-bold text-text-gray">Lesson Description</label>
+
+                    <textarea name="description"
+                        rows="3"
+                        placeholder="Describe lesson focus..."
+                        class="input-field resize-none"></textarea>
+                </div>
+
+                <!-- Buttons -->
                 <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="toggleModal('addSlotRangeModal')" class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold">Cancel</button>
-                    <button type="submit" class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold">Generate</button>
+                    <button type="button"
+                        onclick="toggleModal('addSlotRangeModal')"
+                        class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                        class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold">
+                        Generate
+                    </button>
                 </div>
+
             </form>
         </div>
     </div>
+            
+    <script>
+        const rangeStartTime = document.getElementById('rangeStartTime');
+        const rangeDuration = document.getElementById('rangeDuration');
+        const rangeEndTime = document.getElementById('rangeEndTime');
+
+        function calculateRangeEndTime() {
+
+            const start = rangeStartTime.value;
+            const duration = rangeDuration.value;
+
+            if (!start || !duration) return;
+
+            const [hours, minutes] = start.split(':').map(Number);
+
+            const totalMinutes = (hours * 60) + minutes + parseInt(duration);
+
+            const endHours = Math.floor(totalMinutes / 60) % 24;
+            const endMinutes = totalMinutes % 60;
+
+            rangeEndTime.value =
+                String(endHours).padStart(2, '0') + ':' +
+                String(endMinutes).padStart(2, '0');
+        }
+
+        rangeStartTime.addEventListener('change', calculateRangeEndTime);
+        rangeDuration.addEventListener('change', calculateRangeEndTime);
+    </script>
 
     <script>
         function toggleModal(id) {

@@ -6,13 +6,14 @@
                 <packaging>jar</packaging>
             </packagings>
             <goals>
-                <goal>spring-boot:run</goal>
+                <goal>process-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:3.5.1:exec</goal>
             </goals>
             <properties>
                 <exec.vmArgs></exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.appArgs></exec.appArgs>
-                <exec.mainClass>${packageClassName}</exec.mainClass>
+                <exec.mainClass>com.example.counsellingapp.CounsellingappApplication</exec.mainClass>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

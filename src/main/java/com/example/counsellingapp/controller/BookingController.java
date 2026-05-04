@@ -99,22 +99,37 @@ public class BookingController {
     @Transactional
     public String generateAndSendPdf(
             @PathVariable Long bookingId,
-            @RequestParam String diagnosis,
-            @RequestParam String solution,
-            @RequestParam(required = false) String notes
+            @RequestParam String sessionSummary,
+            @RequestParam String studentProgress,
+            @RequestParam String strengths,
+            @RequestParam String improvement,
+            @RequestParam String recommendation
     ) {
         Booking booking = bookingService.findById(bookingId).orElse(null);
         if (booking == null) return "redirect:/psychiatrist/dashboard?error=booking_not_found";
 
         try {
-            byte[] pdfBytes = pdfService.generateReport(booking, diagnosis, solution, notes);
+            String fullReport =
+                    "Session Summary:\n" + sessionSummary + "\n\n" +
+                    "Student Progress:\n" + studentProgress + "\n\n" +
+                    "Strengths:\n" + strengths + "\n\n" +
+                    "Areas for Improvement:\n" + improvement + "\n\n" +
+                    "Practice Recommendation:\n" + recommendation;
+
+            byte[] pdfBytes = pdfService.generateReport(
+                    booking,
+                    sessionSummary,
+                    studentProgress,
+                    fullReport
+            );
 
             ConsultationReport report = new ConsultationReport();
             report.setBooking(booking);
-            report.setDiagnosis(diagnosis);
-            report.setSolution(solution);
-            report.setNotes(notes);
-            
+            report.setSessionSummary(sessionSummary);
+            report.setStudentProgress(studentProgress);
+            report.setStrengths(strengths);
+            report.setImprovement(improvement);
+            report.setRecommendation(recommendation);
             booking.setConsultationReport(report);
             
             booking.setPaymentStatus(Booking.PaymentStatus.COMPLETED); 
@@ -129,8 +144,8 @@ public class BookingController {
                     fromEmail,
                     fromPassword,
                     toEmail,
-                    "Your Consultation Report",
-                    "Dear " + booking.getUser().getName() + ",\n\nPlease find attached your consultation report.",
+                    "Your Learning Session Report",
+                    "Dear " + booking.getUser().getName() + ",\n\nPlease find attached your session learning report.",
                     pdfBytes,
                     "Consultation_Report.pdf"
             );
@@ -148,41 +163,63 @@ public class BookingController {
 
     @GetMapping("/user/bookings/{bookingId}/pdf/download")
     public void downloadReport(@PathVariable Long bookingId, HttpServletResponse response) throws Exception {
+
         Booking booking = bookingService.findById(bookingId).orElse(null);
+
         if (booking == null || booking.getConsultationReport() == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Report not found");
             return;
         }
 
+        ConsultationReport report = booking.getConsultationReport();
+
+        String fullReport =
+                "Student Progress:\n" + report.getStudentProgress() + "\n\n" +
+                "Strengths:\n" + report.getStrengths() + "\n\n" +
+                "Areas for Improvement:\n" + report.getImprovement() + "\n\n" +
+                "Practice Recommendation:\n" + report.getRecommendation();
+
         byte[] pdfBytes = pdfService.generateReport(
                 booking,
-                booking.getConsultationReport().getDiagnosis(),
-                booking.getConsultationReport().getSolution(),
-                booking.getConsultationReport().getNotes()
+                report.getSessionSummary(),
+                report.getStudentProgress(),
+                fullReport
         );
 
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=Consultation_Report.pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=Learning_Session_Report.pdf");
+
         response.getOutputStream().write(pdfBytes);
     }
 
     @GetMapping("/user/bookings/{bookingId}/pdf/view")
     public void viewReport(@PathVariable Long bookingId, HttpServletResponse response) throws Exception {
+
         Booking booking = bookingService.findById(bookingId).orElse(null);
+
         if (booking == null || booking.getConsultationReport() == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Report not found");
             return;
         }
 
+        ConsultationReport report = booking.getConsultationReport();
+
+        String fullReport =
+                "Student Progress:\n" + report.getStudentProgress() + "\n\n" +
+                "Strengths:\n" + report.getStrengths() + "\n\n" +
+                "Areas for Improvement:\n" + report.getImprovement() + "\n\n" +
+                "Practice Recommendation:\n" + report.getRecommendation();
+
         byte[] pdfBytes = pdfService.generateReport(
                 booking,
-                booking.getConsultationReport().getDiagnosis(),
-                booking.getConsultationReport().getSolution(),
-                booking.getConsultationReport().getNotes()
+                report.getSessionSummary(),
+                report.getStudentProgress(),
+                fullReport
         );
 
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename=Consultation_Report.pdf");
+        response.setHeader("Content-Disposition", "inline; filename=Learning_Session_Report.pdf");
+
         response.getOutputStream().write(pdfBytes);
     }
 
