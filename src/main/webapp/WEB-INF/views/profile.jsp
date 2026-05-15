@@ -89,9 +89,9 @@
         </nav>
 
         <div class="pt-6 border-t border-white/5">
-            <a href="/logout" class="sidebar-link text-red-400 hover:bg-red-400/10 transition-colors text-sm font-bold">
+            <a href="<c:url value='/logout'/>" class="sidebar-link text-red-400 hover:bg-red-400/10 hover:text-red-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-                Logout Account
+                Logout
             </a>
         </div>
     </aside>
@@ -103,6 +103,11 @@
         </header>
 
         <section class="max-w-4xl bg-brand-surface rounded-[2.5rem] border border-white/5 p-10 shadow-2xl">
+            <c:if test="${param.error == 'email_taken'}">
+                <div class="bg-red-500/10 border border-red-500 text-red-400 p-3 rounded-xl text-sm mb-4">
+                    Email is already exist.
+                </div>
+            </c:if>
             <form action="<c:url value='/psychiatrist/profile/update'/>" method="post" class="space-y-8">
                 <input type="hidden" name="id" value="${psychiatrist.id}" />
 

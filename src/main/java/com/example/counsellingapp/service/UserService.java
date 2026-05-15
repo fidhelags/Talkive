@@ -13,4 +13,6 @@ public interface UserService {
 
     User registerUser(String name, String email, String password);
     User login(String email, String rawPassword);
+
+    boolean existsByEmail(String email); 
 }

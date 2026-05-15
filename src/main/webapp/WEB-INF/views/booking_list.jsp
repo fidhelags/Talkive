@@ -42,7 +42,7 @@
         .custom-table { border-collapse: separate; border-spacing: 0 12px; }
         .custom-table tr { background-color: #313131; transition: transform 0.2s; }
         .custom-table tr:hover { transform: scale(1.005); }
-        .custom-table td, .custom-table th { padding: 16px 24px; }
+        .custom-table td, .custom-table th { padding: 16px 24px; vertical-align: middle; }
         .custom-table td:first-child { border-top-left-radius: 1.5rem; border-bottom-left-radius: 1.5rem; }
         .custom-table td:last-child { border-top-right-radius: 1.5rem; border-bottom-right-radius: 1.5rem; }
 
@@ -63,6 +63,9 @@
             color: white; border-radius: 1rem; padding: 12px 16px; width: 100%;
         }
         .input-field:focus { border-color: #f97316; outline: none; }
+        
+        .custom-scroll::-webkit-scrollbar { width: 6px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
     </style>
 </head>
 
@@ -89,8 +92,9 @@
         </nav>
 
         <div class="pt-6 border-t border-white/5">
-            <a href="/logout" class="sidebar-link text-red-400 hover:bg-red-400/10 transition-colors text-sm font-bold">
-                Logout Account
+            <a href="<c:url value='/logout'/>" class="sidebar-link text-red-400 hover:bg-red-400/10 hover:text-red-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                Logout
             </a>
         </div>
     </aside>
@@ -102,192 +106,107 @@
         </header>
 
         <div class="overflow-x-auto">
-
-            <table class="custom-table w-full text-left table-fixed">
-
+            <table class="custom-table min-w-[1200px] w-full text-center">
                 <thead>
                     <tr style="background: transparent;">
-
-                        <th class="w-10 text-center text-text-gray text-xs font-extrabold uppercase tracking-widest">
-                            No
-                        </th>
-
-                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">
-                            Student
-                        </th>
-
-                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">
-                            Language
-                        </th>
-
-                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">
-                            Schedule
-                        </th>
-
-                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">
-                            Amount
-                        </th>
-
-                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">
-                            Status
-                        </th>
-
-                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest text-right">
-                            Action
-                        </th>
-
+                        <th class="w-16 text-text-gray text-xs font-extrabold uppercase tracking-widest text-left">No</th>
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">Student</th>
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">Schedule</th>
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">Level</th>
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">Lesson</th>
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">Description</th>
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">Status</th>
+                        <th class="text-text-gray text-xs font-extrabold uppercase tracking-widest">Action</th>
                     </tr>
                 </thead>
 
                 <tbody class="text-sm">
-
                     <c:forEach var="booking" items="${bookings}" varStatus="loop">
+                        <tr>
+                            <td class="text-text-gray font-semibold">${loop.index + 1}</td>
 
-                        <tr class="hover:bg-white/5 transition">
-
-                            <!-- Number -->
-                            <td class="text-center text-text-gray font-medium">
-                                ${loop.index + 1}
+                            <td>
+                                <div class="font-bold text-white">${booking.user != null ? booking.user.name : '-'}</div>
+                                <div class="text-[11px] text-text-gray mt-0.5">${booking.user.email}</div>
                             </td>
 
-                            <!-- Student -->
                             <td>
-                                <div class="font-bold text-white">
-                                    ${booking.user != null ? booking.user.name : '-'}
-                                </div>
-
-                                <div class="text-xs text-text-gray">
-                                    ${booking.user.email}
-                                </div>
-                            </td>
-
-                            <!-- Language -->
-                            <td>
-                                <div class="flex items-center gap-1.5 whitespace-nowrap">
-
-                                    <span class="text-base leading-none">
-
-                                        <c:choose>
-                                            <c:when test="${booking.slot.psychiatrist.specialization == 'English'}">🇬🇧</c:when>
-                                            <c:when test="${booking.slot.psychiatrist.specialization == 'Indonesia'}">🇮🇩</c:when>
-                                            <c:when test="${booking.slot.psychiatrist.specialization == 'Japanese'}">🇯🇵</c:when>
-                                            <c:when test="${booking.slot.psychiatrist.specialization == 'Korean'}">🇰🇷</c:when>
-                                            <c:when test="${booking.slot.psychiatrist.specialization == 'Chinese'}">🇨🇳</c:when>
-                                            <c:when test="${booking.slot.psychiatrist.specialization == 'French'}">🇫🇷</c:when>
-                                            <c:when test="${booking.slot.psychiatrist.specialization == 'German'}">🇩🇪</c:when>
-                                            <c:when test="${booking.slot.psychiatrist.specialization == 'Spanish'}">🇪🇸</c:when>
-                                            <c:otherwise>🌍</c:otherwise>
-                                        </c:choose>
-
-                                    </span>
-
-                                    <span class="text-sm text-white font-medium">
-                                        ${booking.slot.psychiatrist.specialization}
-                                    </span>
-
-                                </div>
-                            </td>
-
-                            <!-- Schedule -->
-                            <td>
-                                <div class="text-sm font-semibold text-white">
-                                    ${booking.slot.date}
-                                </div>
-
-                                <div class="text-xs text-brand-orange">
+                                <div class="font-semibold text-white">${booking.slot.date}</div>
+                                <div class="text-[11px] text-text-gray mt-1 uppercase tracking-wider">
                                     ${booking.slot.startTime} - ${booking.slot.endTime}
                                 </div>
                             </td>
 
-                            <!-- Amount -->
-                            <td class="text-sm font-bold text-green-400 whitespace-nowrap">
-                                IDR
-                                <fmt:formatNumber value="${booking.slot.price}" pattern="#,###" />
-                            </td>
-
-                            <!-- Status -->
                             <td>
-
-                                <c:choose>
-
-                                    <c:when test="${booking.paymentStatus == 'COMPLETED'}">
-                                        <span class="status-pill status-completed text-[10px]">
-                                            COMPLETED
-                                        </span>
-                                    </c:when>
-
-                                    <c:when test="${booking.paymentStatus == 'PAID' || booking.paymentStatus == 'LINK_SENT'}">
-                                        <span class="status-pill status-paid text-[10px]">
-                                            ${booking.paymentStatus}
-                                        </span>
-                                    </c:when>
-
-                                    <c:otherwise>
-                                        <span class="status-pill status-pending text-[10px]">
-                                            ${booking.paymentStatus}
-                                        </span>
-                                    </c:otherwise>
-
-                                </c:choose>
-
+                                <span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
+                                    ${booking.slot.level}
+                                </span>
                             </td>
 
-                            <!-- Action -->
-                            <td class="text-right">
+                            <td class="font-medium text-white">${booking.slot.lessonType}</td>
 
-                                <c:if test="${booking.paymentStatus == 'PAID' or booking.paymentStatus == 'LINK_SENT' or booking.paymentStatus == 'COMPLETED'}">
+                            <td>
+                                <div class="font-medium text-white text-center">
+                                    ${booking.slot.description}
+                                </div>
+                            </td>
 
-                                    <div class="flex justify-end gap-2">
+                            <td>
+                                <c:choose>
+                                    <c:when test="${booking.paymentStatus == 'COMPLETED'}">
+                                        <span class="status-pill status-completed">COMPLETED</span>
+                                    </c:when>
+                                    <c:when test="${booking.paymentStatus == 'PAID' || booking.paymentStatus == 'LINK_SENT'}">
+                                        <span class="status-pill status-paid">${booking.paymentStatus}</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="status-pill status-pending">${booking.paymentStatus}</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
 
+                            <td>
+                                <div class="flex justify-center gap-2">
+                                    <c:if test="${booking.paymentStatus == 'PAID' or booking.paymentStatus == 'LINK_SENT' or booking.paymentStatus == 'COMPLETED'}">
                                         <c:choose>
-
                                             <c:when test="${booking.paymentStatus == 'COMPLETED'}">
-
-                                                <button class="px-4 py-2 rounded-xl bg-white/5 text-text-gray text-xs font-bold cursor-not-allowed" disabled>
-                                                    Session End
-                                                </button>
-
+                                                <button class="px-4 py-2 rounded-xl bg-white/5 text-text-gray text-[14px] font-bold cursor-not-allowed" disabled>Finished</button>
                                             </c:when>
-
                                             <c:when test="${not empty booking.meetingLink}">
-
                                                 <a href="${booking.meetingLink}" target="_blank"
-                                                   class="min-w-[110px] px-4 py-2 rounded-xl bg-brand-orange text-white text-xs font-bold hover:bg-orange-600 transition-all whitespace-nowrap text-center">
-
+                                                   class="px-4 py-2 rounded-xl bg-brand-orange text-white text-[14px] font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20">
                                                     Join Meeting
                                                 </a>
-
                                             </c:when>
-
                                             <c:otherwise>
-
                                                 <button onclick="openSendLinkModal('${booking.id}', '${booking.meetingLink}')"
-                                                        class="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-bold hover:bg-white/20 transition-all">
-
-                                                    Send Link
+                                                        class="px-4 py-2 rounded-xl bg-white/10 text-white text-[14px] font-bold hover:bg-white/20 transition-all">
+                                                    Link
                                                 </button>
-
                                             </c:otherwise>
-
                                         </c:choose>
 
                                         <button onclick="openPdfForm('${booking.id}', '${booking.user.email}', '${booking.user.name}')"
-                                                class="px-4 py-2 rounded-xl bg-green-500/10 text-green-400 text-xs font-bold hover:bg-green-500 hover:text-white transition-all ${booking.paymentStatus == 'COMPLETED' ? 'opacity-50 cursor-not-allowed' : ''}"
+                                                class="px-4 py-2 rounded-xl bg-green-500/10 text-green-400 text-[14px] font-bold hover:bg-green-500 hover:text-white transition-all ${booking.paymentStatus == 'COMPLETED' ? 'opacity-50 cursor-not-allowed' : ''}"
                                                 ${booking.paymentStatus == 'COMPLETED' ? 'disabled' : ''}>
-
                                             Report
                                         </button>
-
-                                    </div>
-
-                                </c:if>
-
+                                    </c:if>
+                                </div>
                             </td>
-
                         </tr>
-
                     </c:forEach>
 
+                    <c:if test="${empty bookings}">
+                        <tr>
+                            <td colspan="10" class="text-center py-24">
+                                <div class="flex flex-col items-center justify-center text-text-gray">
+                                    <p class="text-xl font-bold text-white mb-2">No Bookings Yet</p>
+                                    <p class="text-sm">Wait for students to book your available slots.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </c:if>
                 </tbody>
             </table>
         </div>
@@ -312,97 +231,48 @@
 
     <div id="pdfFormModal" class="modal">
         <div class="bg-brand-surface p-10 rounded-[2.5rem] max-w-lg w-full mx-4 shadow-2xl border border-white/10 max-h-[85vh] overflow-y-auto custom-scroll">
-
-            <h3 class="text-2xl font-bold text-white mb-2">
-                Session Report
-            </h3>
-
-            <p class="text-text-gray text-sm mb-6 font-medium">
-                Provide student progress and learning feedback
-            </p>
-
+            <h3 class="text-2xl font-bold text-white mb-2">Session Report</h3>
+            <p class="text-text-gray text-sm mb-6 font-medium">Provide student progress and learning feedback</p>
+            
             <form id="pdfForm" method="post" class="space-y-4">
-
                 <input type="hidden" id="pdfBookingId" name="bookingId" />
                 <input type="hidden" id="pdfEmail" name="email" />
                 <input type="hidden" id="pdfName" name="name" />
-
-                <!-- Session Summary -->
+                
                 <div>
-                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">
-                        Session Summary
-                    </label>
-
-                    <textarea name="sessionSummary"
-                        class="input-field h-24 mt-2"
-                        placeholder="Describe what was covered during the session..."
-                        required></textarea>
+                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">Session Summary</label>
+                    <textarea name="sessionSummary" class="input-field h-20 mt-2" placeholder="Summary of the session..." required></textarea>
                 </div>
 
-                <!-- Student Progress -->
                 <div>
-                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">
-                        Student Progress
-                    </label>
-
-                    <textarea name="studentProgress"
-                        class="input-field h-24 mt-2"
-                        placeholder="Explain the student's performance and progress..."
-                        required></textarea>
+                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">Student Progress</label>
+                    <textarea name="studentProgress" class="input-field h-20 mt-2" placeholder="How is the student doing?" required></textarea>
                 </div>
 
-                <!-- Strength -->
                 <div>
-                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">
-                        Strengths
-                    </label>
-
-                    <textarea name="strengths"
-                        class="input-field h-20 mt-2"
-                        placeholder="Student strengths during the lesson..."
-                        required></textarea>
+                    <label class="text-xs font-extrabold text-green-400 uppercase ml-1">Strengths</label>
+                    <textarea name="strengths" class="input-field h-20 mt-2" placeholder="Strengths..." required></textarea>
                 </div>
 
-                <!-- Areas Improvement -->
                 <div>
-                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">
-                        Areas for Improvement
-                    </label>
-
-                    <textarea name="improvement"
-                        class="input-field h-20 mt-2"
-                        placeholder="Skills that need improvement..."
-                        required></textarea>
+                    <label class="text-xs font-extrabold text-red-400 uppercase ml-1">Weaknesses</label>
+                    <textarea name="weaknesses" class="input-field h-20 mt-2" placeholder="Weaknesses..." required></textarea>
                 </div>
 
-                <!-- Homework -->
                 <div>
-                    <label class="text-xs font-extrabold text-text-gray uppercase ml-1">
-                        Practice Recommendation
-                    </label>
-
-                    <textarea name="recommendation"
-                        class="input-field h-20 mt-2"
-                        placeholder="Suggested exercises or homework..."
-                        required></textarea>
+                    <label class="text-xs font-extrabold text-brand-orange uppercase ml-1">Improvement Plan</label>
+                    <textarea name="improvement" class="input-field h-20 mt-2" placeholder="Steps to improve..." required></textarea>
                 </div>
 
-                <!-- Buttons -->
+                <div>
+                    <label class="text-xs font-extrabold text-blue-400 uppercase ml-1">Recommendation</label>
+                    <textarea name="recommendation" class="input-field h-20 mt-2" placeholder="Your final recommendation..." required></textarea>
+                </div>
+
                 <div class="flex gap-3 pt-4">
-
-                    <button type="button"
-                        onclick="closeModal('pdfFormModal')"
-                        class="flex-1 py-4 rounded-2xl bg-white/5 font-bold">
-                        Cancel
-                    </button>
-
-                    <button type="submit"
-                        class="flex-1 py-4 rounded-2xl bg-green-500 text-white font-bold hover:bg-green-600 transition shadow-lg shadow-green-500/20">
-                        Send Report
-                    </button>
-
+                    <button type="button" onclick="closeModal('pdfFormModal')" class="flex-1 py-4 rounded-2xl bg-white/5 font-bold">Cancel</button>
+                    <button type="submit" class="flex-1 py-4 rounded-2xl bg-green-500 text-white font-bold hover:bg-green-600 transition">Send Report</button>
                 </div>
-
             </form>
         </div>
     </div>
@@ -419,13 +289,19 @@
         }
 
         function openPdfForm(bookingId, email, name) {
+            // Isi value ke hidden input
             document.getElementById('pdfBookingId').value = bookingId;
             document.getElementById('pdfEmail').value = email;
             document.getElementById('pdfName').value = name;
-            document.getElementById('pdfForm').action = "/psychiatrist/bookings/" + bookingId + "/generate-report";
+            
+            // Pastikan action URL mengarah ke endpoint yang benar
+            const form = document.getElementById('pdfForm');
+            form.action = "/psychiatrist/bookings/" + bookingId + "/generate-report";
+            
+            // Tampilkan modal
             document.getElementById('pdfFormModal').style.display = "flex";
         }
-
+        
         window.onclick = function(event) {
             if (event.target.className === 'modal') {
                 event.target.style.display = "none";

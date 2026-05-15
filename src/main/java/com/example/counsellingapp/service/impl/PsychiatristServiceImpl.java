@@ -2,7 +2,9 @@ package com.example.counsellingapp.service.impl;
 
 import com.example.counsellingapp.model.Psychiatrist;
 import com.example.counsellingapp.repository.PsychiatristRepository;
+import com.example.counsellingapp.repository.UserRepository;
 import com.example.counsellingapp.service.PsychiatristService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,11 +16,16 @@ import java.util.Optional;
 public class PsychiatristServiceImpl implements PsychiatristService {
 
     private final PsychiatristRepository psychiatristRepository;
+    private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public PsychiatristServiceImpl(PsychiatristRepository psychiatristRepository) {
+    public PsychiatristServiceImpl(
+            PsychiatristRepository psychiatristRepository,
+            UserRepository userRepository
+    ) {
         this.psychiatristRepository = psychiatristRepository;
+        this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
@@ -48,8 +55,25 @@ public class PsychiatristServiceImpl implements PsychiatristService {
     }
 
     @Override
-    public Psychiatrist registerPsychiatrist(String name, String email, String password,
-    String strNumber, String specialization, Integer yearsExperience) {
+    public boolean existsByEmail(String email) {
+        return psychiatristRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Psychiatrist registerPsychiatrist(
+            String name,
+            String email,
+            String password,
+            String strNumber,
+            String specialization,
+            Integer yearsExperience
+    ) {
+
+        if (psychiatristRepository.existsByEmail(email)
+                || userRepository.existsByEmail(email)) {
+            return null;
+        }
+
         Psychiatrist psychiatrist = new Psychiatrist();
         psychiatrist.setName(name);
         psychiatrist.setEmail(email);
@@ -57,11 +81,12 @@ public class PsychiatristServiceImpl implements PsychiatristService {
         psychiatrist.setStrNumber(strNumber);
         psychiatrist.setSpecialization(specialization);
         psychiatrist.setYearsExperience(yearsExperience);
+
         return psychiatristRepository.save(psychiatrist);
     }
 
     @Override
     public Optional<Psychiatrist> findByUsername(String username) {
-        return psychiatristRepository.findByEmail(username); 
+        return psychiatristRepository.findByEmail(username);
     }
 }

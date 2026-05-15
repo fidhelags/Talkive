@@ -97,67 +97,37 @@ public class BookingController {
 
     @PostMapping("/psychiatrist/bookings/{bookingId}/generate-report")
     @Transactional
-    public String generateAndSendPdf(
+    public String generateAndSaveReport(
             @PathVariable Long bookingId,
             @RequestParam String sessionSummary,
             @RequestParam String studentProgress,
             @RequestParam String strengths,
+            @RequestParam String weaknesses, // Now we can actually use this
             @RequestParam String improvement,
             @RequestParam String recommendation
     ) {
         Booking booking = bookingService.findById(bookingId).orElse(null);
-        if (booking == null) return "redirect:/psychiatrist/dashboard?error=booking_not_found";
+        if (booking == null) return "redirect:/psychiatrist/bookings?error=booking_not_found";
 
         try {
-            String fullReport =
-                    "Session Summary:\n" + sessionSummary + "\n\n" +
-                    "Student Progress:\n" + studentProgress + "\n\n" +
-                    "Strengths:\n" + strengths + "\n\n" +
-                    "Areas for Improvement:\n" + improvement + "\n\n" +
-                    "Practice Recommendation:\n" + recommendation;
-
-            byte[] pdfBytes = pdfService.generateReport(
-                    booking,
-                    sessionSummary,
-                    studentProgress,
-                    fullReport
-            );
-
             ConsultationReport report = new ConsultationReport();
             report.setBooking(booking);
             report.setSessionSummary(sessionSummary);
             report.setStudentProgress(studentProgress);
             report.setStrengths(strengths);
+            report.setWeaknesses(weaknesses); // This will now work
             report.setImprovement(improvement);
             report.setRecommendation(recommendation);
-            booking.setConsultationReport(report);
             
+            booking.setConsultationReport(report);
             booking.setPaymentStatus(Booking.PaymentStatus.COMPLETED); 
             
             bookingService.saveBooking(booking); 
 
-            String fromEmail = booking.getSlot().getPsychiatrist().getEmail();
-            String fromPassword = booking.getSlot().getPsychiatrist().getPassword();
-            String toEmail = booking.getUser().getEmail();
-
-            emailService.sendEmailWithAttachment(
-                    fromEmail,
-                    fromPassword,
-                    toEmail,
-                    "Your Learning Session Report",
-                    "Dear " + booking.getUser().getName() + ",\n\nPlease find attached your session learning report.",
-                    pdfBytes,
-                    "Consultation_Report.pdf"
-            );
-
-            return "redirect:/psychiatrist/dashboard?success=pdf_sent_and_completed";
-
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            return "redirect:/psychiatrist/dashboard?error=email_failed";
+            return "redirect:/psychiatrist/bookings?success=report_saved";
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/psychiatrist/dashboard?error=pdf_failed";
+            return "redirect:/psychiatrist/bookings?error=save_failed";
         }
     }
 
@@ -179,11 +149,15 @@ public class BookingController {
                 "Areas for Improvement:\n" + report.getImprovement() + "\n\n" +
                 "Practice Recommendation:\n" + report.getRecommendation();
 
+        // Pass 7 arguments to match PdfReportService
         byte[] pdfBytes = pdfService.generateReport(
                 booking,
                 report.getSessionSummary(),
                 report.getStudentProgress(),
-                fullReport
+                report.getStrengths(),
+                report.getWeaknesses(),
+                report.getImprovement(),
+                report.getRecommendation()
         );
 
         response.setContentType("application/pdf");
@@ -194,7 +168,6 @@ public class BookingController {
 
     @GetMapping("/user/bookings/{bookingId}/pdf/view")
     public void viewReport(@PathVariable Long bookingId, HttpServletResponse response) throws Exception {
-
         Booking booking = bookingService.findById(bookingId).orElse(null);
 
         if (booking == null || booking.getConsultationReport() == null) {
@@ -204,22 +177,19 @@ public class BookingController {
 
         ConsultationReport report = booking.getConsultationReport();
 
-        String fullReport =
-                "Student Progress:\n" + report.getStudentProgress() + "\n\n" +
-                "Strengths:\n" + report.getStrengths() + "\n\n" +
-                "Areas for Improvement:\n" + report.getImprovement() + "\n\n" +
-                "Practice Recommendation:\n" + report.getRecommendation();
-
+        // Call the service with the actual weaknesses from the database
         byte[] pdfBytes = pdfService.generateReport(
                 booking,
                 report.getSessionSummary(),
                 report.getStudentProgress(),
-                fullReport
+                report.getStrengths(),
+                report.getWeaknesses(),
+                report.getImprovement(),
+                report.getRecommendation()
         );
 
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename=Learning_Session_Report.pdf");
-
+        response.setHeader("Content-Disposition", "inline; filename=Session_Report.pdf");
         response.getOutputStream().write(pdfBytes);
     }
 

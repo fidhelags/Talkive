@@ -8,7 +8,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Native Tutor Dashboard - Talkive</title>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -18,10 +18,10 @@
           extend: {
             fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
             colors: {
-                'brand-dark': '#181818',
-                'brand-surface': '#313131',
-                'brand-orange': '#f97316',
-                'text-gray': '#94a3b8',
+              'brand-dark': '#181818',
+              'brand-surface': '#313131',
+              'brand-orange': '#f97316',
+              'text-gray': '#94a3b8',
             }
           }
         }
@@ -30,6 +30,7 @@
 
     <style>
         body { background-color: #181818; color: white; }
+
         .sidebar-link {
             transition: all 0.3s ease;
             display: flex; align-items: center; gap: 12px;
@@ -38,26 +39,94 @@
         .sidebar-link:hover, .sidebar-link.active {
             background-color: #313131; color: #f97316;
         }
+
         .card {
-            background: #313131; border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px; padding: 24px;
+            background: #313131;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 2rem;
+            padding: 2rem;
         }
+
         .input-field {
-            background: #181818; border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 10px 16px; color: white; width: 100%;
+            background: #181818;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: white;
+            width: 100%;
         }
+        .input-field:focus { outline: none; border-color: rgba(249,115,22,0.5); }
+
         .modal {
             display: none; position: fixed; inset: 0; z-index: 50;
             background: rgba(0,0,0,0.8); backdrop-filter: blur(4px);
             align-items: center; justify-content: center;
         }
         .modal.active { display: flex; }
+
+        .custom-table { width: 100%; border-collapse: collapse; }
+        .custom-table thead tr {
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .custom-table thead th {
+            text-align: center;
+            padding: 18px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+        }
+        .custom-table tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.15s;
+        }
+        .custom-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+        .custom-table tbody td { padding: 20px 14px; text-align: center; font-size: 13px; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+        }
+        .action-btn {
+            display: inline-block;
+            background: rgba(249,115,22,0.15);
+            color: #f97316;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .action-btn:hover { background: #f97316; color: white; }
+        .delete-btn {
+            display: inline-block;
+            background: transparent;
+            color: #f87171;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .delete-btn:hover { background: rgba(248,113,113,0.1); }
     </style>
 </head>
 
 <body class="flex min-h-screen">
 
-    <aside class="w-72 bg-brand-surface/30 border-r border-white/5 flex flex-col p-6">
+    <aside class="w-72 bg-brand-surface/30 border-r border-white/5 flex flex-col p-6 sticky top-0 h-screen">
         <div class="flex items-center gap-3 text-2xl font-extrabold text-white mb-10 px-2">
             <span class="p-1.5 bg-brand-orange text-white rounded-lg text-lg">T</span>
             Talkive
@@ -85,229 +154,197 @@
     </aside>
 
     <main class="flex-1 p-10 overflow-y-auto">
-        <header class="mb-10 flex justify-between items-end">
-            <div>
-                <h1 class="text-3xl font-bold">Welcome, <span class="text-brand-orange">${psychiatrist.name}</span></h1>
-                <p class="text-text-gray mt-1">Manage your sessions and availability</p>
-            </div>
+
+        <header class="mb-10">
+            <h1 class="text-3xl font-extrabold">
+                Welcome, <span class="text-brand-orange">${psychiatrist.name}</span>
+            </h1>
+            <p class="text-text-gray mt-1">Manage your sessions and availability</p>
         </header>
 
         <c:if test="${not empty param.error}">
             <div class="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium">
-                ❌ Error: ${param.error}
+                Error: ${param.error}
             </div>
         </c:if>
 
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div class="card">
-                <h2 class="text-text-gray text-sm font-bold uppercase tracking-wider">Total Bookings</h2>
-                <p class="text-4xl font-extrabold mt-2">${bookings != null ? bookings.size() : 0}</p>
+            <div class="card text-center">
+                <h2 class="text-text-gray text-xs font-bold uppercase tracking-widest mb-3">Total Bookings</h2>
+                <p class="text-5xl font-extrabold text-white">
+                    <c:choose>
+                        <c:when test="${bookings != null}">${bookings.size()}</c:when>
+                        <c:otherwise>0</c:otherwise>
+                    </c:choose>
+                </p>
             </div>
-            <div class="card border-l-4 border-brand-orange">
-                <h2 class="text-text-gray text-sm font-bold uppercase tracking-wider">Active Slots</h2>
-                <p class="text-4xl font-extrabold mt-2 text-brand-orange">${slots != null ? slots.size() : 0}</p>
+            <div class="card text-center">
+                <h2 class="text-text-gray text-xs font-bold uppercase tracking-widest mb-3">Active Slots</h2>
+                <p class="text-5xl font-extrabold text-brand-orange">
+                    <c:choose>
+                        <c:when test="${slots != null}">${slots.size()}</c:when>
+                        <c:otherwise>0</c:otherwise>
+                    </c:choose>
+                </p>
             </div>
-            <div class="card">
-                <h2 class="text-text-gray text-sm font-bold uppercase tracking-wider">Sessions Done</h2>
-                <p class="text-4xl font-extrabold mt-2 text-green-400">${completedSessionsCount != null ? completedSessionsCount : 0}</p>
+            <div class="card text-center">
+                <h2 class="text-text-gray text-xs font-bold uppercase tracking-widest mb-3">Sessions Done</h2>
+                <p class="text-5xl font-extrabold text-green-400">
+                    <c:choose>
+                        <c:when test="${completedSessionsCount != null}">${completedSessionsCount}</c:when>
+                        <c:otherwise>0</c:otherwise>
+                    </c:choose>
+                </p>
             </div>
         </section>
 
-        <section class="card mb-12">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold">Your Schedule Slots</h2>
+        <section class="bg-brand-surface rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
 
+            <div class="flex justify-between items-center px-8 py-6 border-b border-white/5 bg-white/[0.02]">
+                <h2 class="text-xl font-bold">Your Schedule Slots</h2>
                 <div class="flex gap-3">
                     <button onclick="toggleModal('addSlotModal')"
-                        class="bg-brand-orange/10 text-brand-orange px-4 py-2 rounded-xl text-sm font-bold hover:bg-brand-orange hover:text-white transition">
+                            class="bg-brand-orange/10 text-brand-orange px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-brand-orange hover:text-white transition-all">
                         + Single Slot
                     </button>
-
                     <button onclick="toggleModal('addSlotRangeModal')"
-                        class="bg-brand-orange text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition">
+                            class="bg-brand-orange text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all">
                         + Batch Slots
                     </button>
                 </div>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="custom-table w-full text-center table-fixed">
-
-                    <thead class="text-text-gray text-xs uppercase tracking-widest border-b border-white/5">
+                <table class="custom-table min-w-[1100px]">
+                    <thead>
                         <tr>
-                            <th class="pb-4 px-2">Date</th>
-                            <th class="pb-4">Time</th>
-                            <th class="pb-4">Duration</th>
-                            <th class="pb-4">Level</th>
-                            <th class="pb-4">Lesson</th>
-                            <th class="pb-4">Price</th>
-                            <th class="pb-4">Status</th>
-                            <th class="pb-4">Description</th>
-                            <th class="pb-4 text-right">Action</th>
+                            <th class="w-16">No</th>
+                            <th>Schedule</th>
+                            <th>Duration</th>
+                            <th>Level</th>
+                            <th>Lesson</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
-
-                    <tbody class="text-sm divide-y divide-white/5">
-
-                        <c:forEach var="slot" items="${slots}">
-                            <tr class="hover:bg-white/[0.02] transition">
-
-                                <!-- Date -->
-                                <td class="py-4 px-2 font-medium whitespace-nowrap">
-                                    ${slot.date}
+                    <tbody class="text-sm">
+                        <c:forEach var="slot" items="${slots}" varStatus="loop">
+                            <tr>
+                                <td class="text-text-gray font-semibold">${loop.index + 1}</td>
+                                <td>
+                                    <div class="font-semibold text-white">${slot.date}</div>
+                                    <div class="text-[11px] text-text-gray mt-1">${slot.startTime} - ${slot.endTime}</div>
                                 </td>
-
-                                <!-- Time -->
-                                <td class="py-4 whitespace-nowrap">
-                                    ${slot.startTime} - ${slot.endTime}
-                                </td>
-
-                                <!-- Duration -->
-                                <td class="py-4">
-                                    <span class="bg-white/5 px-3 py-1 rounded-full text-xs">
+                                <td>
+                                    <span class="bg-white/5 text-text-gray px-3 py-1 rounded-full text-[11px]">
                                         ${slot.duration} min
                                     </span>
                                 </td>
-
-                                <!-- Level -->
-                                <td class="py-4">
-                                    <span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-xs font-bold">
+                                <td>
+                                    <span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
                                         ${slot.level}
                                     </span>
                                 </td>
-
-                                <!-- Lesson -->
-                                <td class="py-4 font-medium">
-                                    ${slot.lessonType}
-                                </td>
-
-                                <!-- Price -->
-                                <td class="py-4 font-bold text-green-400 whitespace-nowrap">
-                                    IDR
-                                    <fmt:formatNumber value="${slot.price}" pattern="#,###"/>
-                                </td>
-
-                                <!-- Status -->
-                                <td class="py-4">
-                                    <span class="px-3 py-1 rounded-full text-[10px] font-extrabold
-                                        ${slot.status == 'AVAILABLE' ? 'bg-green-500/10 text-green-400' :
-                                          slot.status == 'BOOKED' ? 'bg-red-500/10 text-red-400' :
-                                          'bg-yellow-500/10 text-yellow-400'}">
-
-                                        ${slot.status}
-                                    </span>
-                                </td>
-
-                                <!-- Description -->
-                                <td class="max-w-[260px] text-text-gray text-xs">
-                                    <div class="line-clamp-2" title="${slot.description}">
+                                <td class="font-medium text-white">${slot.lessonType}</td>
+                                <td>
+                                    <div class="font-medium text-white" title="${slot.description}">
                                         ${slot.description}
                                     </div>
                                 </td>
-
-                                <!-- Action -->
-                                <td class="py-4 text-center">
-                                    <div class="flex justify-end gap-2">
-
-                                        <button
-                                            onclick="openEditSlotModal(
-                                                '${slot.id}',
-                                                '${slot.date}',
-                                                '${slot.startTime}',
-                                                '${slot.endTime}',
-                                                '${slot.price}',
-                                                '${slot.level}',
-                                                '${slot.lessonType}',
-                                                '${slot.duration}',
-                                                '${slot.description}'
-                                            )"
-
-                                            class="text-text-gray hover:text-white p-2 text-xs font-bold bg-white/5 rounded-lg transition">
+                                <td class="font-medium text-white">
+                                    IDR <fmt:formatNumber value="${slot.price}" pattern="#,###"/>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${slot.status == 'AVAILABLE'}">
+                                            <span class="status-badge bg-green-500/10 text-green-400">AVAILABLE</span>
+                                        </c:when>
+                                        <c:when test="${slot.status == 'BOOKED'}">
+                                            <span class="status-badge bg-red-500/10 text-red-400">BOOKED</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="status-badge bg-yellow-500/10 text-yellow-400">${slot.status}</span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <div class="flex justify-center gap-2">
+                                        <button onclick="openEditSlotModal('${slot.id}', '${slot.date}', '${slot.startTime}', '${slot.duration}', '${slot.price}', '${slot.level}', '${slot.lessonType}', '${slot.description}')"
+                                                class="action-btn">
                                             Edit
                                         </button>
-
                                         <a href="<c:url value='/psychiatrist/slots/delete/${slot.id}'/>"
                                            onclick="return confirm('Delete this slot?')"
-                                           class="text-red-400 hover:bg-red-500/10 p-2 text-xs font-bold rounded-lg transition">
+                                           class="delete-btn">
                                             Delete
                                         </a>
-
                                     </div>
                                 </td>
-
                             </tr>
                         </c:forEach>
-
                         <c:if test="${empty slots}">
                             <tr>
-                                <td colspan="9"
-                                    class="py-10 text-center text-text-gray italic">
-                                    No slots available. Create one to start receiving bookings.
+                                <td colspan="9" class="text-center py-24">
+                                    <div class="flex flex-col items-center justify-center text-text-gray">
+                                        <p class="text-xl font-bold text-white mb-2">No Slots Yet</p>
+                                        <p class="text-sm">Create a slot to start receiving bookings.</p>
+                                    </div>
                                 </td>
                             </tr>
                         </c:if>
-
                     </tbody>
                 </table>
             </div>
         </section>
     </main>
 
+    <!-- MODAL: Add Single Slot -->
     <div id="addSlotModal" class="modal">
-        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10 max-h-[85vh] overflow-y-auto custom-scroll">
+        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10 shadow-2xl">
             <h3 class="text-xl font-bold mb-6 text-brand-orange">Add Single Slot</h3>
             <form action="<c:url value='/psychiatrist/slots'/>" method="post" class="space-y-4">
-
-                <!-- Date -->
                 <div>
-                    <label class="text-xs font-bold text-text-gray">Date</label>
-                    <input type="date" name="date" class="input-field" required>
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Date</label>
+                    <input type="date" name="date" class="input-field w-full [color-scheme:dark]" required>
                 </div>
-
-                <!-- Start Time -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">Start Time</label>
-                    <input type="time" name="startTime" id="startTime" class="input-field" required>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Start Time</label>
+                        <input type="time" name="startTime" id="startTime" class="input-field w-full [color-scheme:dark]" required>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Duration</label>
+                        <select name="duration" id="durationSelect" 
+                            class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
+                            required>
+                            <option value="30">30 Min</option>
+                            <option value="45">45 Min</option>
+                            <option value="60" selected>60 Min</option>
+                            <option value="90">90 Min</option>
+                        </select>
+                    </div>
                 </div>
-
-                <!-- Duration -->
                 <div>
-                    <label class="text-xs font-bold text-text-gray">Duration</label>
-
-                    <select name="duration" id="durationSelect" class="input-field" required>
-                        <option value="" disabled selected>Select Duration</option>
-                        <option value="30">30 Minutes</option>
-                        <option value="45">45 Minutes</option>
-                        <option value="60">60 Minutes</option>
-                        <option value="90">90 Minutes</option>
-                        <option value="120">120 Minutes</option>
-                    </select>
+                    <label class="text-xs font-bold mb-1 block uppercase" style="color:rgba(249,115,22,0.6)">End Time (Auto)</label>
+                    <input type="time" name="endTime" id="endTime" class="input-field" style="opacity:0.6" readonly>
                 </div>
-
-                <!-- End Time Auto -->
                 <div>
-                    <label class="text-xs font-bold text-text-gray">End Time</label>
-                    <input type="time" name="endTime" id="endTime" class="input-field bg-white/5" readonly required>
-                </div>
-
-                <!-- Level -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">Level</label>
-
-                    <select name="level" class="input-field" required>
-                        <option value="" disabled selected>Select Level</option>
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Level</label>
+                    <select name="level" 
+                        class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
+                        required>
                         <option value="Beginner">Beginner</option>
                         <option value="Intermediate">Intermediate</option>
                         <option value="Advanced">Advanced</option>
                     </select>
                 </div>
-
-                <!-- Lesson Type -->
                 <div>
-                    <label class="text-xs font-bold text-text-gray">Lesson Type</label>
-
-                    <select name="lessonType" class="input-field" required>
-                        <option value="" disabled selected>Select Lesson Type</option>
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Lesson Type</label>
+                    <select name="lessonType" 
+                        class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
+                        required>
                         <option value="Conversation">Conversation</option>
                         <option value="Grammar">Grammar</option>
                         <option value="Pronunciation">Pronunciation</option>
@@ -318,140 +355,167 @@
                         <option value="Kids Learning">Kids Learning</option>
                     </select>
                 </div>
-
-                <!-- Price -->
                 <div>
-                    <label class="text-xs font-bold text-text-gray">Price (IDR)</label>
-
-                    <input type="number"
-                        name="price"
-                        class="input-field"
-                        required
-                        min="0"
-                        step="1000"
-                        oninvalid="this.setCustomValidity('Please enter numbers only')"
-                        oninput="this.setCustomValidity('')">
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Price (IDR)</label>
+                    <input type="number" name="price" class="input-field" required min="0" step="1000" placeholder="IDR">
                 </div>
-
-                <!-- Description -->
                 <div>
-                    <label class="text-xs font-bold text-text-gray">Lesson Description</label>
-
-                    <textarea name="description"
-                        rows="3"
-                        placeholder="Describe what students will learn..."
-                        class="input-field resize-none"></textarea>
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Description</label>
+                    <textarea name="description" rows="2" class="input-field resize-none" placeholder="Lesson Focus"></textarea>
                 </div>
-
-                <!-- Buttons -->
                 <div class="flex gap-3 pt-4">
-                    <button type="button"
-                        onclick="toggleModal('addSlotModal')"
-                        class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold">
-                        Cancel
-                    </button>
-
+                    <button type="button" onclick="toggleModal('addSlotModal')"
+                            class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold hover:bg-white/10 transition-all">Cancel</button>
                     <button type="submit"
-                        class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold">
-                        Save Slot
-                    </button>
+                            class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold hover:bg-orange-600 transition-all">Save Slot</button>
                 </div>
-
             </form>
         </div>
     </div>
-            
-    <script>
-        const startTime = document.getElementById('startTime');
-        const durationSelect = document.getElementById('durationSelect');
-        const endTime = document.getElementById('endTime');
 
-        function calculateEndTime() {
-            const start = startTime.value;
-            const duration = durationSelect.value;
-
-            if (!start || !duration) return;
-
-            const [hours, minutes] = start.split(':').map(Number);
-
-            const totalMinutes = (hours * 60) + minutes + parseInt(duration);
-
-            const endHours = Math.floor(totalMinutes / 60) % 24;
-            const endMinutes = totalMinutes % 60;
-
-            const formatted =
-                String(endHours).padStart(2, '0') + ':' +
-                String(endMinutes).padStart(2, '0');
-
-            endTime.value = formatted;
-        }
-
-        startTime.addEventListener('change', calculateEndTime);
-        durationSelect.addEventListener('change', calculateEndTime);
-    </script>
-
-    <div id="editSlotModal" class="modal">
-        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10 max-h-[85vh] overflow-y-auto custom-scroll">
-
-            <h3 class="text-xl font-bold mb-6 text-brand-orange">
-                Update Slot
-            </h3>
-
-            <form id="editForm" method="post" class="space-y-4">
-
-                <input type="hidden" name="id" id="editId">
-
-                <!-- Date -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">Date</label>
-                    <input type="date" name="date" id="editDate" class="input-field" required>
+    <!-- MODAL: Add Batch Slots -->
+    <div id="addSlotRangeModal" class="modal">
+        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10 shadow-2xl">
+            <h3 class="text-xl font-bold mb-6 text-brand-orange">Add Batch Slots</h3>
+            <form action="<c:url value='/psychiatrist/slots/range'/>" method="post" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Start Date</label>
+                        <input type="date" name="startDate" class="input-field w-full [color-scheme:dark]" required>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-text-gray mb-1 block uppercase">End Date</label>
+                        <input type="date" name="endDate" class="input-field w-full [color-scheme:dark]" required>
+                    </div>
                 </div>
-
-                <!-- Start -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">Start Time</label>
-                    <input type="time" name="startTime" id="editStartTime" class="input-field" required>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Start Time</label>
+                        <input type="time" name="startTime" id="batchStartTime" class="input-field w-full [color-scheme:dark]" required>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Duration</label>
+                        <select name="duration" id="batchDuration" 
+                            class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
+                            required>
+                            <option value="30">30 Min</option>
+                            <option value="45">45 Min</option>
+                            <option value="60" selected>60 Min</option>
+                            <option value="90">90 Min</option>
+                        </select>
+                    </div>
                 </div>
-
-                <!-- Duration -->
                 <div>
-                    <label class="text-xs font-bold text-text-gray">Duration</label>
-
-                    <select name="duration" id="editDuration" class="input-field" required>
-                        <option value="">Select Duration</option>
-                        <option value="30">30 Minutes</option>
-                        <option value="45">45 Minutes</option>
-                        <option value="60">60 Minutes</option>
-                        <option value="90">90 Minutes</option>
-                        <option value="120">120 Minutes</option>
+                    <label class="text-xs font-bold mb-1 block uppercase" style="color:rgba(249,115,22,0.6)">End Time (Auto)</label>
+                    <input type="time" name="endTime" id="batchEndTime" class="input-field" style="opacity:0.6" readonly>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Level</label>
+                    <select name="level" 
+                        class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
+                        required>
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
                     </select>
                 </div>
-
-                <!-- End -->
                 <div>
-                    <label class="text-xs font-bold text-text-gray">End Time</label>
-                    <input type="time" name="endTime" id="editEndTime"
-                        class="input-field bg-white/5" readonly required>
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Lesson Type</label>
+                    <select name="lessonType" 
+                        class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
+                        required>
+                        <option value="Conversation">Conversation</option>
+                        <option value="Grammar">Grammar</option>
+                        <option value="Pronunciation">Pronunciation</option>
+                        <option value="Vocabulary">Vocabulary</option>
+                        <option value="Speaking Practice">Speaking Practice</option>
+                        <option value="Exam Preparation">Exam Preparation</option>
+                        <option value="Business Language">Business Language</option>
+                        <option value="Kids Learning">Kids Learning</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Price (IDR)</label>
+                    <input type="number" name="price" class="input-field" required min="0" step="1000" placeholder="IDR">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Description</label>
+                    <textarea name="description" rows="2" class="input-field resize-none" placeholder="Lesson Focus"></textarea>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="toggleModal('addSlotRangeModal')"
+                            class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold hover:bg-white/10 transition-all">Cancel</button>
+                    <button type="submit"
+                            class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold hover:bg-orange-600 transition-all">Save Batch</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Edit Slot -->
+    <div id="editSlotModal" class="modal">
+        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10 shadow-2xl">
+            <h3 class="text-xl font-bold mb-6 text-brand-orange">Edit Slot</h3>
+
+            <form id="editSlotForm" method="post" class="space-y-4">
+
+                <div>
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Date</label>
+                    <input type="date"
+                        name="date"
+                        id="editDate"
+                        class="input-field w-full [color-scheme:dark]"
+                        required>
                 </div>
 
-                <!-- Level -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">Level</label>
+                <div class="grid grid-cols-2 gap-4 items-end">
+                    <div>
+                        <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Start Time</label>
+                        <input type="time" name="startTime" id="editStartTime" class="input-field w-full [color-scheme:dark]" required>
+                    </div>
 
-                    <select name="level" id="editLevel" class="input-field" required>
-                        <option value="">Select Level</option>
+                    <div class="relative">
+                        <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Duration</label>
+
+                        <select name="duration" id="editDuration"
+                            class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
+                            required>
+
+                            <option value="30">30 Min</option>
+                            <option value="45">45 Min</option>
+                            <option value="60">60 Min</option>
+                            <option value="90">90 Min</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold mb-1 block uppercase"
+                        style="color:rgba(249,115,22,0.6)">
+                        End Time (Auto)
+                    </label>
+                    <input type="time" name="endTime" id="editEndTime"
+                        class="input-field"
+                        style="opacity:0.6"
+                        readonly>
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Level</label>
+                    <select name="level" id="editLevel"
+                        class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
+                        required>
                         <option value="Beginner">Beginner</option>
                         <option value="Intermediate">Intermediate</option>
                         <option value="Advanced">Advanced</option>
                     </select>
                 </div>
 
-                <!-- Lesson Type -->
                 <div>
-                    <label class="text-xs font-bold text-text-gray">Lesson Type</label>
-
-                    <select name="lessonType" id="editLessonType" class="input-field" required>
-                        <option value="">Select Lesson Type</option>
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Lesson Type</label>
+                    <select name="lessonType" id="editLessonType" 
+                        class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
+                        required>
                         <option value="Conversation">Conversation</option>
                         <option value="Grammar">Grammar</option>
                         <option value="Pronunciation">Pronunciation</option>
@@ -463,39 +527,29 @@
                     </select>
                 </div>
 
-                <!-- Price -->
                 <div>
-                    <label class="text-xs font-bold text-text-gray">Price (IDR)</label>
-
-                    <input type="number"
-                        name="price"
-                        id="editPrice"
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Price (IDR)</label>
+                    <input type="number" name="price" id="editPrice"
                         class="input-field"
-                        required
-                        min="0"
-                        step="1000">
+                        required min="0" step="1000">
                 </div>
 
-                <!-- Description -->
                 <div>
-                    <label class="text-xs font-bold text-text-gray">Lesson Description</label>
-
-                    <textarea name="description"
-                        id="editDescription"
-                        rows="3"
+                    <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Description</label>
+                    <textarea name="description" id="editDescription"
+                        rows="2"
                         class="input-field resize-none"></textarea>
                 </div>
 
-                <!-- Buttons -->
                 <div class="flex gap-3 pt-4">
                     <button type="button"
                         onclick="toggleModal('editSlotModal')"
-                        class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold">
+                        class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold hover:bg-white/10 transition-all">
                         Cancel
                     </button>
 
                     <button type="submit"
-                        class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold">
+                        class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold hover:bg-orange-600 transition-all">
                         Update Slot
                     </button>
                 </div>
@@ -503,207 +557,62 @@
             </form>
         </div>
     </div>
-    
-    <script>
-        const editStartTime = document.getElementById('editStartTime');
-        const editDuration = document.getElementById('editDuration');
-        const editEndTime = document.getElementById('editEndTime');
-
-        function calculateEditEndTime() {
-
-            const start = editStartTime.value;
-            const duration = editDuration.value;
-
-            if (!start || !duration) return;
-
-            const [hours, minutes] = start.split(':').map(Number);
-
-            const totalMinutes = (hours * 60) + minutes + parseInt(duration);
-
-            const endHours = Math.floor(totalMinutes / 60) % 24;
-            const endMinutes = totalMinutes % 60;
-
-            editEndTime.value =
-                String(endHours).padStart(2, '0') + ':' +
-                String(endMinutes).padStart(2, '0');
-        }
-
-        editStartTime.addEventListener('change', calculateEditEndTime);
-        editDuration.addEventListener('change', calculateEditEndTime);
-    </script>
-
-    <div id="addSlotRangeModal" class="modal">
-        <div class="bg-brand-surface p-8 rounded-[2rem] w-full max-w-md border border-white/10 max-h-[85vh] overflow-y-auto custom-scroll">
-
-            <h3 class="text-xl font-bold mb-6 text-brand-orange">
-                Add Slots by Range
-            </h3>
-
-            <form action="<c:url value='/psychiatrist/slots/range'/>" method="post" class="space-y-4">
-
-                <!-- Date Range -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs font-bold text-text-gray">Start Date</label>
-                        <input type="date" name="startDate" class="input-field" required>
-                    </div>
-
-                    <div>
-                        <label class="text-xs font-bold text-text-gray">End Date</label>
-                        <input type="date" name="endDate" class="input-field" required>
-                    </div>
-                </div>
-
-                <!-- Start Time -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">Start Time</label>
-                    <input type="time" name="startTime" id="rangeStartTime" class="input-field" required>
-                </div>
-
-                <!-- Duration -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">Duration</label>
-
-                    <select name="duration" id="rangeDuration" class="input-field" required>
-                        <option value="" disabled selected>Select Duration</option>
-                        <option value="30">30 Minutes</option>
-                        <option value="45">45 Minutes</option>
-                        <option value="60">60 Minutes</option>
-                        <option value="90">90 Minutes</option>
-                        <option value="120">120 Minutes</option>
-                    </select>
-                </div>
-
-                <!-- End Time Auto -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">End Time</label>
-                    <input type="time" name="endTime" id="rangeEndTime"
-                        class="input-field bg-white/5" readonly required>
-                </div>
-
-                <!-- Level -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">Level</label>
-
-                    <select name="level" class="input-field" required>
-                        <option value="" disabled selected>Select Level</option>
-                        <option value="Beginner">Beginner</option>
-                        <option value="Intermediate">Intermediate</option>
-                        <option value="Advanced">Advanced</option>
-                    </select>
-                </div>
-
-                <!-- Lesson Type -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">Lesson Type</label>
-
-                    <select name="lessonType" class="input-field" required>
-                        <option value="" disabled selected>Select Lesson Type</option>
-                        <option value="Conversation">Conversation</option>
-                        <option value="Grammar">Grammar</option>
-                        <option value="Pronunciation">Pronunciation</option>
-                        <option value="Vocabulary">Vocabulary</option>
-                        <option value="Speaking Practice">Speaking Practice</option>
-                        <option value="Exam Preparation">Exam Preparation</option>
-                        <option value="Business Language">Business Language</option>
-                        <option value="Kids Learning">Kids Learning</option>
-                    </select>
-                </div>
-
-                <!-- Price -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">Daily Price</label>
-
-                    <input type="number"
-                        name="price"
-                        class="input-field"
-                        required
-                        min="0"
-                        step="1000">
-                </div>
-
-                <!-- Description -->
-                <div>
-                    <label class="text-xs font-bold text-text-gray">Lesson Description</label>
-
-                    <textarea name="description"
-                        rows="3"
-                        placeholder="Describe lesson focus..."
-                        class="input-field resize-none"></textarea>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex gap-3 pt-4">
-                    <button type="button"
-                        onclick="toggleModal('addSlotRangeModal')"
-                        class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold">
-                        Cancel
-                    </button>
-
-                    <button type="submit"
-                        class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold">
-                        Generate
-                    </button>
-                </div>
-
-            </form>
-        </div>
-    </div>
-            
-    <script>
-        const rangeStartTime = document.getElementById('rangeStartTime');
-        const rangeDuration = document.getElementById('rangeDuration');
-        const rangeEndTime = document.getElementById('rangeEndTime');
-
-        function calculateRangeEndTime() {
-
-            const start = rangeStartTime.value;
-            const duration = rangeDuration.value;
-
-            if (!start || !duration) return;
-
-            const [hours, minutes] = start.split(':').map(Number);
-
-            const totalMinutes = (hours * 60) + minutes + parseInt(duration);
-
-            const endHours = Math.floor(totalMinutes / 60) % 24;
-            const endMinutes = totalMinutes % 60;
-
-            rangeEndTime.value =
-                String(endHours).padStart(2, '0') + ':' +
-                String(endMinutes).padStart(2, '0');
-        }
-
-        rangeStartTime.addEventListener('change', calculateRangeEndTime);
-        rangeDuration.addEventListener('change', calculateRangeEndTime);
-    </script>
 
     <script>
         function toggleModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.toggle('active');
+            document.getElementById(id).classList.toggle('active');
         }
 
-        function openEditSlotModal(id, date, start, end, price) {
-            // Isi data ke dalam modal edit
-            document.getElementById('editId').value = id;
+        window.onclick = function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
+        };
+
+        function calcEndTime(startEl, durationEl, endEl) {
+            if (!startEl.value || !durationEl.value) return;
+            var parts = startEl.value.split(':');
+            var h = parseInt(parts[0]);
+            var m = parseInt(parts[1]);
+            var total = (h * 60) + m + parseInt(durationEl.value);
+            endEl.value = String(Math.floor(total / 60) % 24).padStart(2, '0') + ':' + String(total % 60).padStart(2, '0');
+        }
+
+        var st = document.getElementById('startTime');
+        var ds = document.getElementById('durationSelect');
+        var et = document.getElementById('endTime');
+        st.addEventListener('change', function() { calcEndTime(st, ds, et); });
+        ds.addEventListener('change', function() { calcEndTime(st, ds, et); });
+
+        var bst = document.getElementById('batchStartTime');
+        var bds = document.getElementById('batchDuration');
+        var bet = document.getElementById('batchEndTime');
+        bst.addEventListener('change', function() { calcEndTime(bst, bds, bet); });
+        bds.addEventListener('change', function() { calcEndTime(bst, bds, bet); });
+
+        var est = document.getElementById('editStartTime');
+        var eds = document.getElementById('editDuration');
+        var eet = document.getElementById('editEndTime');
+        est.addEventListener('change', function() { calcEndTime(est, eds, eet); });
+        eds.addEventListener('change', function() { calcEndTime(est, eds, eet); });
+
+        function openEditSlotModal(id, date, startTime, duration, price, level, lessonType, description) {
+            document.getElementById('editSlotForm').action = '/psychiatrist/slots/' + id;
             document.getElementById('editDate').value = date;
-            document.getElementById('editStartTime').value = start;
-            document.getElementById('editEndTime').value = end;
+            document.getElementById('editStartTime').value = startTime;
+            document.getElementById('editDuration').value = duration;
             document.getElementById('editPrice').value = price;
-            
-            // Set action form secara dinamis
-            document.getElementById('editForm').action = "<c:url value='/psychiatrist/slots/'/>" + id;
-            
+            document.getElementById('editLevel').value = level;
+            document.getElementById('editLessonType').value = lessonType;
+            document.getElementById('editDescription').value = description;
+            calcEndTime(
+                document.getElementById('editStartTime'),
+                document.getElementById('editDuration'),
+                document.getElementById('editEndTime')
+            );
             toggleModal('editSlotModal');
         }
-
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('active');
-            }
-        }
     </script>
+
 </body>
 </html>

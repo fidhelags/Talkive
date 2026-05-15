@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.example.counsellingapp.service.PsychiatristService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,6 +27,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+
+    @Autowired
+    private PsychiatristService psychiatristService;
 
     @Autowired
     private SlotService slotService;
@@ -117,20 +121,38 @@ public class UserController {
     
     @PostMapping("/profile/update")
     public String updateProfile(@ModelAttribute User user, HttpSession session) {
+
         User existing = userService.findById(user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        existing.setName(user.getName());;
-        existing.setEmail(user.getEmail());
+        // =========================
+        // EMAIL VALIDATION (CROSS ROLE)
+        // =========================
+        String newEmail = user.getEmail();
+        String oldEmail = existing.getEmail();
+
+        if (newEmail != null && !newEmail.equalsIgnoreCase(oldEmail)) {
+
+            boolean emailExistsInUser = userService.existsByEmail(newEmail);
+            boolean emailExistsInPsychiatrist = psychiatristService.existsByEmail(newEmail);
+
+            if (emailExistsInUser || emailExistsInPsychiatrist) {
+                return "redirect:/user/profile?error=email_taken";
+            }
+
+            existing.setEmail(newEmail);
+        }
+
+        existing.setName(user.getName());
 
         if (user.getPassword() != null && !user.getPassword().isBlank()) {
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            String hashedPassword = passwordEncoder.encode(user.getPassword());
-            existing.setPassword(hashedPassword);
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            existing.setPassword(encoder.encode(user.getPassword()));
         }
 
         userService.saveUser(existing);
         session.setAttribute("loggedInUser", existing);
+
         return "redirect:/user/profile?success=true";
     }
     

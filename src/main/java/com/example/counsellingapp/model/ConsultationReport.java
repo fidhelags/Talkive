@@ -33,6 +33,19 @@ public class ConsultationReport {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // Add this field to ConsultationReport.java
+    @Column(name = "weaknesses", columnDefinition = "TEXT")
+    private String weaknesses;
+
+    // Add these methods
+    public String getWeaknesses() {
+        return weaknesses;
+    }
+
+    public void setWeaknesses(String weaknesses) {
+        this.weaknesses = weaknesses;
+    }
+
     // Getter Setter
     public Long getId() {
         return id;

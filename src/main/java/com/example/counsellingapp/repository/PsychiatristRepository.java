@@ -8,5 +8,8 @@ import java.util.Optional;
 
 @Repository
 public interface PsychiatristRepository extends JpaRepository<Psychiatrist, Long> {
+
     Optional<Psychiatrist> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 }

@@ -12,6 +12,8 @@ public interface PsychiatristService {
     List<Psychiatrist> findAll();
     void deleteById(Long id);
 
+    boolean existsByEmail(String email); 
+
     Psychiatrist registerPsychiatrist(String name, String email, String password,
     String strNumber, String specialization, Integer yearsExperience);
 }

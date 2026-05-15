@@ -6,6 +6,7 @@ import com.example.counsellingapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.example.counsellingapp.repository.PsychiatristRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,9 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
+
+    @Autowired
+    private PsychiatristRepository psychiatristRepository;
 
     @Override
     public User saveUser(User user) {
@@ -48,11 +52,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
     public User registerUser(String name, String email, String password) {
+
+        if (userRepository.existsByEmail(email)
+                || psychiatristRepository.existsByEmail(email)) {
+            return null;
+        }
+
         User user = new User();
         user.setName(name);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
+
         return userRepository.save(user);
     }
 

@@ -138,10 +138,10 @@
 
             <div id="psyFields" class="hidden space-y-3 bg-brand-dark/30 p-4 rounded-2xl border border-white/5 mt-2">
                 <div class="grid grid-cols-2 gap-3">
-                    <input type="text" name="strNumber" placeholder="STR/License" 
+                    <input type="text" name="strNumber" placeholder="Certification/License" 
                         class="h-12 px-4 rounded-xl border border-white/5 bg-brand-dark text-sm text-white font-medium outline-none transition-all focus-orange" />
                     
-                    <input type="number" name="yearsExperience" placeholder="Years Exp" min="0"
+                    <input type="number" name="yearsExperience" placeholder="Years of Experience" min="0"
                         class="h-12 px-4 rounded-xl border border-white/5 bg-brand-dark text-sm text-white font-medium outline-none transition-all focus-orange" />
                 </div>
                 <div class="relative">

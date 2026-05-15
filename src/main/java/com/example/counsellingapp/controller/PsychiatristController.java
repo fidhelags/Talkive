@@ -21,6 +21,7 @@ import com.example.counsellingapp.model.Slot;
 import com.example.counsellingapp.service.BookingService;
 import com.example.counsellingapp.service.PsychiatristService;
 import com.example.counsellingapp.service.SlotService;
+import com.example.counsellingapp.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
@@ -30,6 +31,9 @@ import java.time.LocalDateTime;
 @Controller
 @RequestMapping("/psychiatrist")
 public class PsychiatristController {
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private PsychiatristService psychiatristService;
@@ -163,23 +167,41 @@ public class PsychiatristController {
 
     @PostMapping("/profile/update")
     public String updateProfile(@ModelAttribute Psychiatrist psychiatrist, HttpSession session) {
+
         Psychiatrist existing = psychiatristService.findById(psychiatrist.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Psychiatrist not found"));
 
+        // =========================
+        // EMAIL VALIDATION (CROSS ROLE)
+        // =========================
+        String newEmail = psychiatrist.getEmail();
+        String oldEmail = existing.getEmail();
+
+        if (newEmail != null && !newEmail.equalsIgnoreCase(oldEmail)) {
+
+            boolean emailUsedByUser = userService.existsByEmail(newEmail);
+            boolean emailUsedByPsychiatrist = psychiatristService.existsByEmail(newEmail);
+
+            if (emailUsedByUser || emailUsedByPsychiatrist) {
+                return "redirect:/psychiatrist/profile?error=email_taken";
+            }
+
+            existing.setEmail(newEmail);
+        }
+
         existing.setName(psychiatrist.getName());
-        existing.setEmail(psychiatrist.getEmail());
         existing.setStrNumber(psychiatrist.getStrNumber());
         existing.setSpecialization(psychiatrist.getSpecialization());
         existing.setYearsExperience(psychiatrist.getYearsExperience());
 
         if (psychiatrist.getPassword() != null && !psychiatrist.getPassword().isBlank()) {
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            String hashedPassword = passwordEncoder.encode(psychiatrist.getPassword());
-            existing.setPassword(hashedPassword);
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            existing.setPassword(encoder.encode(psychiatrist.getPassword()));
         }
 
         psychiatristService.savePsychiatrist(existing);
         session.setAttribute("loggedInUser", existing);
+
         return "redirect:/psychiatrist/profile?success=true";
     }
 
