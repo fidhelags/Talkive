@@ -8,12 +8,20 @@ class AuthInput extends StatelessWidget {
     required this.hint,
     required this.icon,
     this.obscureText = false,
+    this.controller,
+    this.validator,
+    this.keyboardType,
+    this.textInputAction,
   });
 
   final String label;
   final String hint;
   final IconData icon;
   final bool obscureText;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +38,11 @@ class AuthInput extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
+        TextFormField(
+          controller: controller,
+          validator: validator,
+          keyboardType: keyboardType,
+          textInputAction: textInputAction,
           obscureText: obscureText,
           style: const TextStyle(
             color: Colors.white,
@@ -42,6 +54,10 @@ class AuthInput extends StatelessWidget {
             prefixIcon: Icon(icon, color: AppColors.textGray),
             filled: true,
             fillColor: AppColors.dark,
+            errorStyle: const TextStyle(
+              color: Colors.redAccent,
+              fontWeight: FontWeight.w600,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide(color: Colors.white.withOpacity(0.06)),
@@ -50,6 +66,20 @@ class AuthInput extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               borderSide: const BorderSide(
                 color: AppColors.orange,
+                width: 1.5,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: const BorderSide(
+                color: Colors.redAccent,
+                width: 1.2,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: const BorderSide(
+                color: Colors.redAccent,
                 width: 1.5,
               ),
             ),
