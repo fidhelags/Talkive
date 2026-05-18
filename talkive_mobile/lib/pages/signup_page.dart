@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/app_colors.dart';
+import '../services/auth_service.dart';
 import '../widgets/auth_widgets.dart';
 import '../widgets/shared_widgets.dart';
 
@@ -11,6 +12,7 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  bool _isLoading = false;
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
@@ -97,17 +99,41 @@ class _SignupPageState extends State<SignupPage> {
     return null;
   }
 
-  void _handleSignUp() {
+  Future<void> _handleSignUp() async {
     final isValid = _formKey.currentState!.validate();
 
     if (!isValid) {
       return;
     }
 
-    Navigator.pushReplacementNamed(
-      context,
-      '/dashboard',
+    setState(() {
+      _isLoading = true;
+    });
+
+    final result = await AuthService.register(
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
     );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          result.success ? 'Register berhasil, silakan login' : result.message,
+        ),
+        backgroundColor: result.success ? Colors.green : Colors.redAccent,
+      ),
+    );
+
+    if (result.success) {
+      Navigator.pushReplacementNamed(context, '/login');
+    }
   }
 
   @override
@@ -224,10 +250,14 @@ class _SignupPageState extends State<SignupPage> {
 
                           const SizedBox(height: 24),
 
-                          PrimaryButton(
-                            text: 'Sign Up',
-                            onTap: _handleSignUp,
-                          ),
+                          _isLoading
+                              ? const CircularProgressIndicator(
+                                  color: AppColors.orange,
+                                )
+                              : PrimaryButton(
+                                  text: 'Sign Up',
+                                  onTap: _handleSignUp,
+                                ),
 
                           const SizedBox(height: 22),
 

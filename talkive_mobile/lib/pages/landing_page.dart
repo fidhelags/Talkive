@@ -38,22 +38,6 @@ class LandingPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              color: AppColors.surface,
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.06),
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.menu_rounded,
-                              color: AppColors.orange,
-                            ),
-                          ),
                         ],
                       ),
                       const SizedBox(height: 46),
