@@ -77,4 +77,51 @@ public class MobileAuthController {
                 )
         );
     }
+
+    @PostMapping("/api/auth/register")
+    public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
+        String name = Objects.toString(request.get("name"), "").trim();
+        String email = Objects.toString(request.get("email"), "").trim();
+        String password = Objects.toString(request.get("password"), "");
+
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Nama, email, dan password wajib diisi"));
+        }
+
+        if (!email.contains("@")) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Email harus menggunakan @"));
+        }
+
+        Integer existingUser = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM users WHERE LOWER(email) = LOWER(?)",
+                Integer.class,
+                email
+        );
+
+        if (existingUser != null && existingUser > 0) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Email sudah terdaftar"));
+        }
+
+        String hashedPassword = passwordEncoder.encode(password);
+
+        jdbcTemplate.update(
+                "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+                name,
+                email,
+                hashedPassword
+        );
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "message", "Register berhasil",
+                        "email", email
+                )
+     );
+    }
 }
