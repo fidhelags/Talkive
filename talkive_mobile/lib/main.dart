@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart'; // 1. Pastikan mengimport package ini
 import 'core/app_colors.dart';
 import 'pages/dashboard_page.dart';
 import 'pages/landing_page.dart';
@@ -19,7 +20,10 @@ class TalkiveApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        fontFamily: 'Plus Jakarta Sans',
+        // 2. Ganti properti fontFamily lama dengan textTheme global dari Google Fonts
+        textTheme: GoogleFonts.plusJakartaSansTextTheme(
+          Theme.of(context).textTheme,
+        ),
         scaffoldBackgroundColor: AppColors.dark,
         colorScheme: const ColorScheme.dark(
           primary: AppColors.orange,

@@ -8,6 +8,12 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Catatan: Di masa mendatang, data ini akan diambil dari State Management (Provider/Bloc)
+    // atau API Response yang dikirim oleh Controller Spring Boot kamu.
+    final String studentName = "Alex"; // Simulasi data dari ${user.name}
+    final int totalBookings = 3;       // Simulasi data dari ${fn:length(bookings)}
+    final int pendingPayments = 1;     // Simulasi hitungan status PENDING
+
     return Scaffold(
       backgroundColor: AppColors.dark,
       body: SafeArea(
@@ -19,12 +25,14 @@ class DashboardPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // --- HEADER BAR ---
                   Row(
                     children: [
                       const TalkiveLogo(),
                       const Spacer(),
                       GestureDetector(
                         onTap: () {
+                          // Menghapus tumpukan halaman dan kembali ke halaman Login/Landing
                           Navigator.pushReplacementNamed(context, '/');
                         },
                         child: Container(
@@ -46,45 +54,51 @@ class DashboardPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 34),
-                  const Text(
-                    'My Bookings',
-                    style: TextStyle(
+
+                  // --- GREETING & TITLE ---
+                  Text(
+                    'Welcome back, $studentName',
+                    style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 34,
+                      fontSize: 30,
                       fontWeight: FontWeight.w900,
                       letterSpacing: -0.8,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   const Text(
-                    'Kelola sesi belajar dan temukan tutor yang sesuai.',
+                    'Ready for your next learning session?',
                     style: TextStyle(
                       color: AppColors.textGray,
-                      height: 1.5,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Row(
+
+                  // --- STATS CARD (Sama seperti baris Grid di JSP) ---
+                  Row(
                     children: [
                       Expanded(
                         child: DashboardStat(
-                          title: '3',
-                          subtitle: 'Sessions',
+                          title: totalBookings.toString(),
+                          subtitle: 'Total Bookings',
                           icon: Icons.calendar_month_rounded,
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: DashboardStat(
-                          title: '12',
-                          subtitle: 'Tutors',
-                          icon: Icons.record_voice_over_rounded,
+                          title: pendingPayments.toString(),
+                          subtitle: 'Pending Pay',
+                          icon: Icons.pending_actions_rounded,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 22),
+
+                  // --- SEARCH BAR SLOTS ---
                   Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
@@ -102,15 +116,17 @@ class DashboardPage extends StatelessWidget {
                             style: TextStyle(
                               color: AppColors.textGray,
                               fontWeight: FontWeight.w700,
-                            ),
+                        ),
                           ),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 26),
+
+                  // --- UPCOMING SESSIONS SECTION ---
                   const Text(
-                    'Upcoming Session',
+                    'Your Recent Sessions',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
@@ -118,19 +134,23 @@ class DashboardPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 14),
+
+                  // Mengambil basis data model booking dari target database yang sama
                   const BookingCard(
                     tutorName: 'Sarah Miller',
-                    language: 'English Native Tutor',
+                    language: 'English Native Tutor', // Dipetakan dari psychiatrist/tutor di DB
                     date: 'Today, 19:30',
-                    status: 'PAID',
+                    status: 'PAID', // Jika PAID, tampilkan tombol 'Join Call' di dalam widget-nya
                   ),
                   const BookingCard(
                     tutorName: 'Kenji Tanaka',
                     language: 'Japanese Conversation',
                     date: 'Friday, 20:00',
-                    status: 'PENDING',
+                    status: 'PENDING', // Jika PENDING, tampilkan tombol 'Complete Payment'
                   ),
                   const SizedBox(height: 26),
+
+                  // --- EXPLORE SECTION (Pengganti halaman slots di mobile) ---
                   const Text(
                     'Available Tutors',
                     style: TextStyle(

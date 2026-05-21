@@ -51,7 +51,7 @@ class LandingPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(999),
                           border: Border.all(
                             color: AppColors.orange.withOpacity(0.25),
-                          ),
+                                                  ),
                         ),
                         child: const Text(
                           'GLOBAL LEARNING COMMUNITY',
@@ -65,21 +65,25 @@ class LandingPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       RichText(
-                        text: const TextSpan(
-                          style: TextStyle(
+                        text: TextSpan(
+                          // Gaya dasar untuk seluruh teks di dalam RichText
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontSize: 42,
                             height: 1.08,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w900, // Membuat teks dasar menjadi tebal (Bold)
                             color: Colors.white,
                             letterSpacing: -1.2,
                           ),
-                          children: [
-                            TextSpan(text: 'Master Languages by '),
-                            TextSpan(
+                          children: [ // Kata kunci 'const' di sini dihapus agar style anak bisa diterapkan
+                            const TextSpan(text: 'Master Languages by '),
+                            const TextSpan(
                               text: 'Conversing',
-                              style: TextStyle(color: AppColors.orange),
+                              style: TextStyle(
+                                color: AppColors.orange,
+                                fontWeight: FontWeight.w900, // Menjaga konsistensi ketebalan
+                              ),
                             ),
-                            TextSpan(text: ' with Natives.'),
+                            const TextSpan(text: ' with Natives.'),
                           ],
                         ),
                       ),
