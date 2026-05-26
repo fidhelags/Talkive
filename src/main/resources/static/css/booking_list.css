@@ -1,0 +1,171 @@
+/* === GLOBAL === */
+body {
+  background-color: #f1f5f9;
+  color: #1e293b;
+  font-family: 'Figtree', sans-serif;
+  display: flex;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background-color: #1e3a8a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-decoration: none;
+  margin-bottom: 2rem;
+}
+
+.logo-main {
+  color: white;
+}
+
+.logo-accent {
+  color: #60a5fa;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.nav-link {
+  display: block;
+  padding: 0.6rem 1rem;
+  border-radius: 0.5rem;
+  color: #f8fafc;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.nav-link:hover {
+  background-color: #2563eb;
+}
+
+.nav-link.active {
+  background-color: #3b82f6;
+}
+
+.logout-container {
+  margin-top: auto;
+}
+
+.logout-btn {
+  display: block;
+  background-color: #1e40af;
+  color: white;
+  text-align: center;
+  padding: 0.6rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+  background-color: #2563eb;
+}
+
+
+/* === MAIN CONTENT === */
+.main-content {
+  flex: 1;
+  padding: 2rem 3rem;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.page-subtitle {
+  color: #64748b;
+  margin-top: 0.3rem;
+}
+
+/* === TABLE === */
+.table-section {
+  background: white;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.booking-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.booking-table th,
+.booking-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.booking-table th {
+  background-color: #f8fafc;
+  color: #334155;
+  font-weight: 600;
+}
+
+.booking-table tr:hover td {
+  background-color: #f1f5f9;
+}
+
+.status-paid {
+  background-color: #dcfce7;
+  color: #15803d;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.status-pending {
+  background-color: #fef3c7;
+  color: #b45309;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* === BUTTONS === */
+.btn-primary {
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+}
