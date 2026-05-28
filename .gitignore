@@ -40,3 +40,4 @@ application.properties
 .env
 
 *.hprof 
+"src/main/resources/firebase-service-account.json" 
