@@ -137,11 +137,11 @@
                 <p class="text-3xl font-extrabold text-white"><c:out value="${fn:length(bookings)}" /></p>
             </div>
             <div class="bg-brand-surface p-6 rounded-[2rem] border border-white/5 shadow-xl text-center">
-                <h2 class="text-text-gray text-[16px] font-bold uppercase tracking-widest mb-2">Success Sessions</h2>
+                <h2 class="text-text-gray text-[16px] font-bold uppercase tracking-widest mb-2">Active Sessions</h2>
                 <p class="text-3xl font-extrabold text-green-400">
                     <c:set var="count" value="0" />
                     <c:forEach var="b" items="${bookings}">
-                        <c:if test="${b.paymentStatus == 'PAID' or b.paymentStatus == 'COMPLETED'}">
+                        <c:if test="${b.paymentStatus == 'PAID' or b.paymentStatus == 'LINK_SENT'}">
                             <c:set var="count" value="${count + 1}" />
                         </c:if>
                     </c:forEach>
@@ -149,7 +149,7 @@
                 </p>
             </div>
             <div class="bg-brand-surface p-6 rounded-[2rem] border border-white/5 shadow-xl text-center">
-                <h2 class="text-text-gray text-[16px] font-bold uppercase tracking-widest mb-2">Pending Action</h2>
+                <h2 class="text-text-gray text-[16px] font-bold uppercase tracking-widest mb-2">Pending Actions</h2>
                 <p class="text-3xl font-extrabold text-yellow-400">
                     <c:set var="pcount" value="0" />
                     <c:forEach var="b" items="${bookings}">

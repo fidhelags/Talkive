@@ -22,6 +22,8 @@ import com.example.counsellingapp.service.BookingService;
 import com.example.counsellingapp.service.TutorService;
 import com.example.counsellingapp.service.SlotService;
 import com.example.counsellingapp.service.UserService;
+import com.example.counsellingapp.service.FCMService;
+import com.example.counsellingapp.model.User;
 
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
@@ -43,6 +45,9 @@ public class TutorController {
 
     @Autowired
     private BookingService bookingService;
+
+    @Autowired
+    private FCMService fcmService;
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
@@ -140,15 +145,25 @@ public class TutorController {
         Booking booking = bookingService.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        if (booking.getPaymentStatus() != Booking.PaymentStatus.PAID) {
+        if (booking.getPaymentStatus() != Booking.PaymentStatus.PAID &&
+            booking.getPaymentStatus() != Booking.PaymentStatus.LINK_SENT) {
             return "redirect:/tutor/dashboard?error=booking_not_paid";
         }
 
         booking.setMeetingLink(meetingLink);
-
         booking.setPaymentStatus(Booking.PaymentStatus.LINK_SENT);
-
         bookingService.saveBooking(booking);
+
+        // Kirim notif ke student
+        User student = booking.getUser();
+        
+        if (student.getFcmToken() != null) {
+            fcmService.sendNotification(
+                student.getFcmToken(),
+                "Meeting Link Ready 🎯",
+                "Your tutor has sent the meeting link. Join your session now!"
+            );
+        }
 
         return "redirect:/tutor/bookings?success=link_sent";
     }

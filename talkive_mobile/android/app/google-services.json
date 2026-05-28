@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "708473722356",
+    "project_id": "talkive-6d57a",
+    "storage_bucket": "talkive-6d57a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708473722356:android:b88282c71dcac80068d5a1",
+        "android_client_info": {
+          "package_name": "com.example.talkive_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9N80UteiKcQ1NoloxaaNoCJaWvsTQiEU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

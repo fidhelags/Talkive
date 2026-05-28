@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import com.example.counsellingapp.service.FCMService;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -55,6 +55,9 @@ public class BookingController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private FCMService fcmService;
+
     @GetMapping("/bookings/create/{slotId}")
     @Transactional
     public String createBooking(@PathVariable Long slotId, HttpSession session) {
@@ -79,10 +82,13 @@ public class BookingController {
 
             
             Map<String, String> snapResult = MidtransPaymentUtil.createSnapTransaction(
-                    orderId,
-                    slot.getPrice(),
-                    "Consultation with " + slot.getTutor().getName(),
-                    user);
+                orderId,
+                slot.getPrice(),
+                "Consultation with " + slot.getTutor().getName(),
+                user,
+                "http://localhost:8080/user/dashboard",
+                "http://localhost:8080/user/dashboard",
+                "http://localhost:8080/user/dashboard");
 
             String redirectUrl = snapResult.get("redirect_url"); 
 
@@ -123,6 +129,16 @@ public class BookingController {
             booking.setPaymentStatus(Booking.PaymentStatus.COMPLETED); 
             
             bookingService.saveBooking(booking); 
+
+            User student = booking.getUser();
+
+            if (student.getFcmToken() != null) {
+                fcmService.sendNotification(
+                    student.getFcmToken(),
+                    "Session Report Ready 📋",
+                    "Your tutor has submitted your session report. Tap to view."
+                );
+            }
 
             return "redirect:/tutor/bookings?success=report_saved";
         } catch (Exception e) {
@@ -226,11 +242,13 @@ public class BookingController {
             bookingService.saveBooking(booking);
             
             Map<String, String> snap = MidtransPaymentUtil.createSnapTransaction(
-                    newOrderId, 
-                    slot.getPrice(),
-                    "Consultation with " + slot.getTutor().getName(),
-                    user
-            );
+                newOrderId,
+                slot.getPrice(),
+                "Consultation with " + slot.getTutor().getName(),
+                user,
+                "http://localhost:8080/user/dashboard",
+                "http://localhost:8080/user/dashboard",
+                "http://localhost:8080/user/dashboard");
 
             String redirectUrl = snap.get("redirect_url");
             return "redirect:" + redirectUrl;

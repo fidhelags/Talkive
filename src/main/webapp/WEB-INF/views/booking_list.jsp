@@ -174,9 +174,13 @@
                                             </c:when>
                                             <c:when test="${not empty booking.meetingLink}">
                                                 <a href="${booking.meetingLink}" target="_blank"
-                                                   class="px-4 py-2 rounded-xl bg-brand-orange text-white text-[14px] font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20">
+                                                class="px-4 py-2 rounded-xl bg-brand-orange text-white text-[14px] font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20">
                                                     Join Meeting
                                                 </a>
+                                                <button onclick="openSendLinkModal('${booking.id}', '${booking.meetingLink}')"
+                                                        class="px-4 py-2 rounded-xl bg-white/10 text-white text-[14px] font-bold hover:bg-white/20 transition-all">
+                                                    Edit Link
+                                                </button>
                                             </c:when>
                                             <c:otherwise>
                                                 <button onclick="openSendLinkModal('${booking.id}', '${booking.meetingLink}')"

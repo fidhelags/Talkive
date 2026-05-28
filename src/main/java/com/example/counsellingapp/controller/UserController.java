@@ -45,18 +45,21 @@ public class UserController {
         User user = (User) session.getAttribute("loggedInUser");
         if (user == null) return "redirect:/auth/login";
 
-        List<Booking> bookings = bookingService.findAllBookingsByUser(user);
+        User refreshed = userService.findById(user.getId()).orElse(user);
+        session.setAttribute("loggedInUser", refreshed);
+
+        List<Booking> bookings = bookingService.findAllBookingsByUser(refreshed);
 
         List<Tutor> recommendedTutors;
-        if (user.getPreferredLanguage() != null && !user.getPreferredLanguage().isEmpty()) {
+        if (refreshed.getPreferredLanguage() != null && !refreshed.getPreferredLanguage().isEmpty()) {
             recommendedTutors = tutorService.findAll().stream()
-                .filter(t -> t.getLanguage().equalsIgnoreCase(user.getPreferredLanguage()))
+                .filter(t -> t.getLanguage().equalsIgnoreCase(refreshed.getPreferredLanguage()))
                 .toList();
         } else {
             recommendedTutors = tutorService.findAll();
         }
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", refreshed);
         model.addAttribute("bookings", bookings);
         model.addAttribute("recommendedTutors", recommendedTutors);
         model.addAttribute("page", "dashboard");
@@ -159,7 +162,9 @@ public class UserController {
         User user = (User) session.getAttribute("loggedInUser");
         if (user == null) return "redirect:/login";
 
-        model.addAttribute("user", user);
+        User refreshed = userService.findById(user.getId()).orElse(user);
+        session.setAttribute("loggedInUser", refreshed);
+        model.addAttribute("user", refreshed);
         return "user_profile";
     }
 
@@ -191,7 +196,9 @@ public class UserController {
         }
 
         userService.saveUser(existing);
-        session.setAttribute("loggedInUser", existing);
+
+        User refreshed = userService.findById(existing.getId()).orElse(existing);
+        session.setAttribute("loggedInUser", refreshed);
 
         return "redirect:/user/profile?success=true";
     }

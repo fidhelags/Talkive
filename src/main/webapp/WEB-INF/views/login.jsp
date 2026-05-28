@@ -12,9 +12,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
-      tailwind.config = {
+        tailwind.config = {
         theme: {
-          extend: {
+            extend: {
             fontFamily: { 
                 sans: ['Plus Jakarta Sans', 'sans-serif'] 
             },
@@ -26,28 +26,40 @@
                 'text-gray': '#94a3b8',
             },
             keyframes: {
-              fadeIn: {
+                fadeIn: {
                 'from': { opacity: '0', transform: 'translateY(10px)' },
                 'to': { opacity: '1', transform: 'translateY(0)' },
-              },
+                },
             },
             animation: {
-              'fade-in': 'fadeIn 0.6s ease-out forwards',
+                'fade-in': 'fadeIn 0.6s ease-out forwards',
             },
-          }
+            }
         }
-      }
+        }
+
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            input.type = input.type === "password" ? "text" : "password";
+        }
+
+        function toggleEyeVisibility(inputId, wrapperId) {
+            const input = document.getElementById(inputId);
+            const wrapper = document.getElementById(wrapperId);
+            if (input.value.length > 0) wrapper.classList.remove("hidden");
+            else wrapper.classList.add("hidden");
+        }
     </script>
 
     <style>
-      .animate-body-fade {
+        .animate-body-fade {
         animation: fadeIn 0.6s ease-out forwards;
-      }
-      /* Custom focus ring for orange */
-      .focus-orange:focus {
+        }
+        /* Custom focus ring for orange */
+        .focus-orange:focus {
         border-color: #f97316;
         box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
-      }
+        }
     </style>
 </head>
 
@@ -68,7 +80,7 @@
         </a>
 
         <h2 class="text-2xl font-bold text-white mb-2">Welcome Back 👋</h2>
-        <p class="text-text-gray text-sm mb-10 italic">Login to your account and start talking.</p>
+        <p class="text-text-gray text-sm mb-10 italic">Login to your account and start talking</p>
 
         <form action="/login" method="post" class="flex flex-col gap-5 text-left">
 
@@ -92,14 +104,25 @@
 
             <div>
                 <label class="block text-xs font-bold text-text-gray uppercase tracking-widest mb-2 ml-1">Password</label>
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="••••••••"
-                    required
-                    class="w-full h-14 px-5 rounded-2xl border border-white/5 bg-brand-dark text-sm text-white font-medium outline-none transition-all duration-200
-                           focus-orange focus:bg-brand-dark/50 placeholder:text-gray-600"
-                />
+                <div class="relative">
+                    <input
+                        id="loginPassword"
+                        type="password"
+                        name="password"
+                        placeholder="••••••••"
+                        required
+                        oninput="toggleEyeVisibility('loginPassword', 'eyeLoginWrapper')"
+                        class="w-full h-14 px-5 pr-12 rounded-2xl border border-white/5 bg-brand-dark text-sm text-white font-medium outline-none transition-all duration-200
+                            focus-orange focus:bg-brand-dark/50 placeholder:text-gray-600"
+                    />
+                    <button type="button" id="eyeLoginWrapper" onclick="togglePassword('loginPassword', 'eyeLoginIcon')"
+                        class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-text-gray hover:text-brand-orange transition-colors">
+                        <svg id="eyeLoginIcon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div class="flex justify-end -mt-2">

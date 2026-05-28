@@ -38,7 +38,10 @@ public class MidtransPaymentUtil {
         System.out.println("Midtrans initialized. Production mode: " + isProduction);
     }
 
-    public static Map<String, String> createSnapTransaction(String orderId, int amount, String itemName, User user) throws MidtransError {
+    public static Map<String, String> createSnapTransaction(
+        String orderId, int amount, String itemName, User user,
+        String finishUrl, String errorUrl, String pendingUrl) throws MidtransError {
+
         if (snapConfig == null) {
             throw new IllegalStateException("MidtransPaymentUtil belum di-inisialisasi!");
         }
@@ -61,9 +64,9 @@ public class MidtransPaymentUtil {
         customerDetails.put("email", user.getEmail());
 
         Map<String, Object> callbacks = new HashMap<>();
-        callbacks.put("finish", "http://localhost:8080/user/dashboard");
-        callbacks.put("unfinish", "http://localhost:8080/user/dashboard");
-        callbacks.put("error", "http://localhost:8080/user/dashboard");
+        callbacks.put("finish", finishUrl);
+        callbacks.put("unfinish", pendingUrl);
+        callbacks.put("error", errorUrl);
 
         Map<String, Object> param = new HashMap<>();
         param.put("transaction_details", transactionDetails);
