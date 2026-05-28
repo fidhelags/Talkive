@@ -15,17 +15,21 @@ import com.example.counsellingapp.model.User;
 import com.example.counsellingapp.repository.BookingRepository;
 import com.example.counsellingapp.service.BookingService;
 import com.example.counsellingapp.service.SlotService; 
+import com.example.counsellingapp.service.FCMService;
+
 
 @Service
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final SlotService slotService; 
+    private final FCMService fcmService; 
 
     @Autowired
-    public BookingServiceImpl(BookingRepository bookingRepository, SlotService slotService) {
+    public BookingServiceImpl(BookingRepository bookingRepository, SlotService slotService, FCMService fcmService) {
         this.bookingRepository = bookingRepository;
-        this.slotService = slotService; 
+        this.slotService = slotService;
+        this.fcmService = fcmService;
     }
 
     @Override
@@ -116,6 +120,15 @@ public class BookingServiceImpl implements BookingService {
                             slot.setStatus(Slot.SlotStatus.BOOKED);
                             slotService.saveSlot(slot);
                             System.out.println("Booking PAID → Slot " + slot.getId() + " berhasil dikunci.");
+                        }
+
+                        User user = booking.getUser();
+                        if (user != null && user.getFcmToken() != null && !user.getFcmToken().isEmpty()) {
+                            fcmService.sendNotification(
+                                user.getFcmToken(),
+                                "Pembayaran Berhasil! 🎉",
+                                "Booking kamu dengan " + slot.getTutor().getName() + " sudah dikonfirmasi."
+                            );
                         }
                     } catch (Exception slotException) {
                         System.err.println("ERROR saat mengupdate Slot status: " + slotException.getMessage());

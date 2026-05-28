@@ -288,23 +288,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
 
-                          const SizedBox(height: 14),
-
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: GestureDetector(
-                              onTap: () {},
-                              child: const Text(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                  color: orange,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ),
-
                           const SizedBox(height: 30),
 
                           // LOGIN BUTTON

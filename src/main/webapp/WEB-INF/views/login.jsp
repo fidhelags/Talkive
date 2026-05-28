@@ -125,10 +125,6 @@
                 </div>
             </div>
 
-            <div class="flex justify-end -mt-2">
-                <a href="#" class="text-xs font-semibold text-text-gray hover:text-brand-orange transition-colors">Forgot Password?</a>
-            </div>
-
             <button
                 type="submit"
                 class="h-14 bg-brand-orange text-white text-base font-bold rounded-2xl mt-4
