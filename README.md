@@ -1,7 +1,7 @@
 # Talkive
 
 > **Repository:** https://github.com/fidhelags/Talkive
-> **Branch:** `web-mobile`
+> **Branch:** `web-mobile-fixed`
 
 ## Informasi Setup
 
