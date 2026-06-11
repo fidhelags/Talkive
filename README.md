@@ -18,7 +18,7 @@ Untuk keperluan instalasi dan pengujian aplikasi, silakan memperoleh folder **Se
 ```bash
 git clone https://github.com/fidhelags/Talkive.git
 cd Talkive
-git checkout web-mobile
+git checkout web-mobile-fixed
 ```
 
 ### 2. Setup Database
