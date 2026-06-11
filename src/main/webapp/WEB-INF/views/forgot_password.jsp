@@ -6,59 +6,54 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Talkive - Login</title>
+    <title>Talkive - Forgot Password</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
         tailwind.config = {
-        theme: {
-            extend: {
-            fontFamily: { 
-                sans: ['Plus Jakarta Sans', 'sans-serif'] 
-            },
-            colors: {
-                'brand-dark': '#181818',    /* Hitam */
-                'brand-surface': '#313131', /* Abu-abu Gelap */
-                'brand-orange': '#f97316',  /* Oranye Utama */
-                'brand-orange-light': '#ffedd5',
-                'text-gray': '#94a3b8',
-            },
-            keyframes: {
-                fadeIn: {
-                'from': { opacity: '0', transform: 'translateY(10px)' },
-                'to': { opacity: '1', transform: 'translateY(0)' },
-                },
-            },
-            animation: {
-                'fade-in': 'fadeIn 0.6s ease-out forwards',
-            },
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        'brand-dark': '#181818',
+                        'brand-surface': '#313131',
+                        'brand-orange': '#f97316',
+                        'brand-orange-light': '#ffedd5',
+                        'text-gray': '#94a3b8',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            'from': { opacity: '0', transform: 'translateY(10px)' },
+                            'to': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out forwards',
+                    },
+                }
             }
         }
-        }
 
-        function togglePassword(inputId, iconId) {
+        function togglePassword(inputId) {
             const input = document.getElementById(inputId);
-            input.type = input.type === "password" ? "text" : "password";
+            input.type = input.type === 'password' ? 'text' : 'password';
         }
 
         function toggleEyeVisibility(inputId, wrapperId) {
             const input = document.getElementById(inputId);
             const wrapper = document.getElementById(wrapperId);
-            if (input.value.length > 0) wrapper.classList.remove("hidden");
-            else wrapper.classList.add("hidden");
+            if (input.value.length > 0) wrapper.classList.remove('hidden');
+            else wrapper.classList.add('hidden');
         }
     </script>
 
     <style>
-        .animate-body-fade {
-        animation: fadeIn 0.6s ease-out forwards;
-        }
-        /* Custom focus ring for orange */
+        .animate-body-fade { animation: fadeIn 0.6s ease-out forwards; }
         .focus-orange:focus {
-        border-color: #f97316;
-        box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
+            border-color: #f97316;
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
         }
     </style>
 </head>
@@ -74,21 +69,27 @@
 
         <a href="/"
             class="inline-flex items-center gap-2 text-3xl font-extrabold text-white mb-6 tracking-tight
-                  hover:scale-105 transition-transform duration-200 cursor-pointer">
+                   hover:scale-105 transition-transform duration-200 cursor-pointer">
             <span class="p-1.5 bg-brand-orange text-white rounded-lg text-xl">T</span>
             Talkive
         </a>
 
-        <h2 class="text-2xl font-bold text-white mb-2">Welcome Back 👋</h2>
-        <p class="text-text-gray text-sm mb-10 italic">Login to your account and start talking</p>
+        <h2 class="text-2xl font-bold text-white mb-2">Reset Password 🔑</h2>
+        <p class="text-text-gray text-sm mb-10 italic">Enter your email and new password</p>
 
-        <form action="/login" method="post" class="flex flex-col gap-5 text-left">
+        <c:if test="${not empty errorMessage}">
+            <div class="bg-red-500/10 border border-red-500/20 py-3 px-4 rounded-xl mb-5">
+                <p class="text-red-500 text-xs font-bold text-center">${errorMessage}</p>
+            </div>
+        </c:if>
 
-            <c:if test="${not empty errorMessage}">
-                <div class="bg-red-500/10 border border-red-500/20 py-3 px-4 rounded-xl">
-                    <p class="text-red-500 text-xs font-bold text-center">${errorMessage}</p>
-                </div>
-            </c:if>
+        <c:if test="${not empty successMessage}">
+            <div class="bg-green-500/10 border border-green-500/20 py-3 px-4 rounded-xl mb-5">
+                <p class="text-green-400 text-xs font-bold text-center">${successMessage}</p>
+            </div>
+        </c:if>
+
+        <form action="/forgot-password" method="post" class="flex flex-col gap-5 text-left">
 
             <div>
                 <label class="block text-xs font-bold text-text-gray uppercase tracking-widest mb-2 ml-1">Email Address</label>
@@ -103,21 +104,21 @@
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-text-gray uppercase tracking-widest mb-2 ml-1">Password</label>
+                <label class="block text-xs font-bold text-text-gray uppercase tracking-widest mb-2 ml-1">New Password</label>
                 <div class="relative">
                     <input
-                        id="loginPassword"
+                        id="newPassword"
                         type="password"
-                        name="password"
+                        name="newPassword"
                         placeholder="••••••••"
                         required
-                        oninput="toggleEyeVisibility('loginPassword', 'eyeLoginWrapper')"
+                        oninput="toggleEyeVisibility('newPassword', 'eyeWrapper')"
                         class="w-full h-14 px-5 pr-12 rounded-2xl border border-white/5 bg-brand-dark text-sm text-white font-medium outline-none transition-all duration-200
-                            focus-orange focus:bg-brand-dark/50 placeholder:text-gray-600"
+                               focus-orange focus:bg-brand-dark/50 placeholder:text-gray-600"
                     />
-                    <button type="button" id="eyeLoginWrapper" onclick="togglePassword('loginPassword', 'eyeLoginIcon')"
+                    <button type="button" id="eyeWrapper" onclick="togglePassword('newPassword')"
                         class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-text-gray hover:text-brand-orange transition-colors">
-                        <svg id="eyeLoginIcon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
@@ -125,24 +126,18 @@
                 </div>
             </div>
 
-            <div class="flex justify-end mt-1">
-                <a href="/forgot-password" class="text-xs text-text-gray hover:text-brand-orange transition-colors font-semibold">
-                    Forgot Password?
-                </a>
-            </div>
-
             <button
                 type="submit"
                 class="h-14 bg-brand-orange text-white text-base font-bold rounded-2xl mt-4
                        hover:bg-orange-600 active:scale-[0.98] transition-all shadow-lg shadow-orange-500/20"
             >
-                Sign In
+                Reset Password
             </button>
         </form>
 
         <p class="text-sm text-text-gray mt-8 font-medium">
-            New here?
-            <a href="register" class="text-brand-orange font-bold hover:underline decoration-2 underline-offset-4 transition-all">Create an account</a>
+            Remember your password?
+            <a href="/auth/login" class="text-brand-orange font-bold hover:underline decoration-2 underline-offset-4 transition-all">Back to Login</a>
         </p>
     </div>
 

@@ -25,20 +25,14 @@ class _AvailableSlotPageState extends State<AvailableSlotPage> {
   String _selectedLesson = '';
   DateTime? _selectedDate;
 
-  Timer? _refreshTimer;
-
   @override
   void initState() {
     super.initState();
     _fetchSlots();
-    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      _fetchSlots();
-    });
   }
 
   @override
   void dispose() {
-    _refreshTimer?.cancel();
     super.dispose();
   }
 
