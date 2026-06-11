@@ -103,6 +103,6 @@ ngrok http 8080
 | ------- | --------------------------------------------- | ------------ |
 | Tutor   | [ragil@gmail.com](mailto:ragil@gmail.com)     | @Tutor123    |
 | Tutor   | [rafly@gmail.com](mailto:rafly@gmail.com)     | @Tutor123    |
-| Student | [yudis@gmail.com](mailto:yudis@gmail.com)     | @Yudis123123 |
+| Student | [yudis@gmail.com](mailto:yudis@gmail.com)     | @Yudis123    |
 | Student | [fidhela@gmail.com](mailto:fidhela@gmail.com) | @User123     |
 | Student | [fadhil@gmail.com](mailto:fadhil@gmail.com)   | @User123     |
