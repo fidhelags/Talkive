@@ -293,15 +293,24 @@
 
                     <!-- Buttons -->
                     <div class="flex items-end gap-3">
-                        <button type="submit"
-                                class="h-12 px-6 bg-brand-orange hover:bg-orange-600 transition rounded-xl text-sm font-bold text-white">
-                            Apply
-                        </button>
-                        <a href="<c:url value='/user/preference'/>"
-                        onclick="this.href+='?preferredLanguage='"
-                        class="h-12 px-5 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-sm font-bold text-white hover:bg-white/10 transition">
-                            Reset
-                        </a>
+                        <!-- Apply -->
+                        <form action="<c:url value='/user/preference'/>" method="post" style="margin:0;">
+                            <input type="hidden" name="preferredLanguage" id="applyLangInput" value="${user.preferredLanguage}" />
+                            <button type="submit"
+                                    onclick="document.getElementById('applyLangInput').value = document.getElementById('preferredLanguageSelect').value"
+                                    class="h-12 px-6 bg-brand-orange hover:bg-orange-600 transition rounded-xl text-sm font-bold text-white">
+                                Apply
+                            </button>
+                        </form>
+            
+                        <!-- Reset -->
+                        <form action="<c:url value='/user/preference'/>" method="post" style="margin:0;">
+                            <input type="hidden" name="preferredLanguage" value="" />
+                            <button type="submit"
+                                    class="h-12 px-5 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-sm font-bold text-white hover:bg-white/10 transition">
+                                Reset
+                            </button>
+                        </form>
                     </div>
                 </div>
             </form>
