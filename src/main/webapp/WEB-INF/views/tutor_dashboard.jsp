@@ -613,6 +613,10 @@
             toggleModal('editSlotModal');
         }
     </script>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/chatbot.css">
 
+    <jsp:include page="chatbot_widget.jsp" />
+
+    <script src="${pageContext.request.contextPath}/assets/chatbot.js"></script>
 </body>
 </html>

@@ -148,7 +148,7 @@
 
                     <div class="flex flex-col space-y-2 md:col-span-2">
                         <label class="text-xs font-extrabold text-text-gray uppercase tracking-widest ml-1">
-                            Language Language
+                            Language
                         </label>
 
                         <div class="flex items-center gap-3">
@@ -158,11 +158,11 @@
                                 class="form-input rounded-2xl px-5 py-4 text-sm font-medium text-white/90 bg-brand-dark border border-white/5 appearance-none w-full">
 
                                 <option value="" disabled ${empty tutor.language ? 'selected' : ''}>
-                                    Language language
+                                    Language
                                 </option>
 
                                 <option value="English" ${tutor.language == 'English' ? 'selected' : ''}>🇬🇧 English</option>
-                                <option value="Indonesia" ${tutor.language == 'Indonesia' ? 'selected' : ''}>🇮🇩 Indonesia</option>
+                                <option value="Indonesia" ${tutor.language == 'Indonesia' ? 'selected' : ''}>🇮🇩 Indonesian</option>
                                 <option value="Japanese" ${tutor.language == 'Japanese' ? 'selected' : ''}>🇯🇵 Japanese</option>
                                 <option value="Korean" ${tutor.language == 'Korean' ? 'selected' : ''}>🇰🇷 Korean</option>
                                 <option value="Chinese" ${tutor.language == 'Chinese' ? 'selected' : ''}>🇨🇳 Chinese</option>
