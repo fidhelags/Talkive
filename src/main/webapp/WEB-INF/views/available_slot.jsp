@@ -261,8 +261,7 @@
             <h2 class="text-white font-bold text-lg mb-6">🎯 Recommended Tutors</h2>
 
             <!-- Preference Filter -->
-            <form action="<c:url value='/user/preference'/>" method="post"
-                class="bg-brand-dark border border-white/5 rounded-[1.5rem] p-5 mb-6">
+            <div class="bg-brand-dark border border-white/5 rounded-[1.5rem] p-5 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 items-end">
 
                     <!-- Language Preference -->
@@ -271,7 +270,8 @@
                             Preferred Language
                         </label>
                         <div class="relative">
-                            <select name="preferredLanguage"
+                            <select id="preferredLanguageSelect"
+                                    name="preferredLanguage"
                                     class="w-full bg-brand-surface border border-white/10 text-white rounded-2xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-brand-orange appearance-none">
                                 <option value="" ${empty user.preferredLanguage ? 'selected' : ''}>🌍 All Languages</option>
                                 <option value="English"   ${user.preferredLanguage == 'English'   ? 'selected' : ''}>🇬🇧 English</option>
@@ -302,7 +302,7 @@
                                 Apply
                             </button>
                         </form>
-            
+
                         <!-- Reset -->
                         <form action="<c:url value='/user/preference'/>" method="post" style="margin:0;">
                             <input type="hidden" name="preferredLanguage" value="" />
@@ -313,7 +313,7 @@
                         </form>
                     </div>
                 </div>
-            </form>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <c:forEach var="tutor" items="${recommendedTutors}">
