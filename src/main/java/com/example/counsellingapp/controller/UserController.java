@@ -17,10 +17,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import java.util.Map;
 import java.util.HashMap;
 
@@ -41,15 +39,27 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/dashboard")
-    public String viewDashboard(HttpSession session, Model model) {
+    public String viewDashboard(HttpSession session, Model model,
+                                @RequestParam(defaultValue = "0") int page) {
         User user = (User) session.getAttribute("loggedInUser");
         if (user == null) return "redirect:/auth/login";
 
         User refreshed = userService.findById(user.getId()).orElse(user);
         session.setAttribute("loggedInUser", refreshed);
 
-        List<Booking> bookings = bookingService.findAllBookingsByUser(refreshed);
+        List<Booking> allBookings = bookingService.findAllBookingsByUser(refreshed);
 
+        // Hitung stats dari semua booking (sebelum dipotong)
+        int totalBookings = allBookings.size();
+        int activeSessions = (int) allBookings.stream()
+                .filter(b -> b.getPaymentStatus() == Booking.PaymentStatus.PAID
+                          || b.getPaymentStatus() == Booking.PaymentStatus.LINK_SENT)
+                .count();
+        int pendingCount = (int) allBookings.stream()
+                .filter(b -> b.getPaymentStatus() == Booking.PaymentStatus.PENDING)
+                .count();
+
+        // Recommended tutors
         List<Tutor> recommendedTutors;
         if (refreshed.getPreferredLanguage() != null && !refreshed.getPreferredLanguage().isEmpty()) {
             recommendedTutors = tutorService.findAll().stream()
@@ -59,10 +69,27 @@ public class UserController {
             recommendedTutors = tutorService.findAll();
         }
 
+        // --- Pagination ---
+        int pageSize = 10;
+        int totalPages = (int) Math.ceil((double) totalBookings / pageSize);
+        if (page < 0) page = 0;
+        if (totalPages > 0 && page >= totalPages) page = totalPages - 1;
+
+        int fromIndex = page * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalBookings);
+        List<Booking> pagedBookings = totalBookings > 0 ? allBookings.subList(fromIndex, toIndex) : List.of();
+
         model.addAttribute("user", refreshed);
-        model.addAttribute("bookings", bookings);
+        model.addAttribute("bookings", pagedBookings);
         model.addAttribute("recommendedTutors", recommendedTutors);
+        model.addAttribute("totalBookings", totalBookings);
+        model.addAttribute("activeSessions", activeSessions);
+        model.addAttribute("pendingCount", pendingCount);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("pageSize", pageSize);
         model.addAttribute("page", "dashboard");
+
         return "user_dashboard";
     }
 

@@ -90,6 +90,26 @@
             transition: 0.2s ease;
             display: inline-block;
         }
+
+        /* Pagination */
+        .page-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            padding: 0 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            color: #94a3b8;
+            background: rgba(255,255,255,0.05);
+        }
+        .page-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+        .page-btn.active { background: #f97316; color: white; }
+        .page-btn.disabled { opacity: 0.3; pointer-events: none; }
     </style>
 </head>
 
@@ -130,40 +150,45 @@
             <p class="text-text-gray mt-2 text-sm">Review your learning sessions and upcoming calls</p>
         </header>
 
-        <!-- Stats -->
+        <!-- Stats — pakai variabel dari controller, bukan hitung di JSP -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div class="bg-brand-surface p-6 rounded-[2rem] border border-white/5 shadow-xl text-center">
                 <h2 class="text-text-gray text-[16px] font-bold uppercase tracking-widest mb-2">Total Bookings</h2>
-                <p class="text-3xl font-extrabold text-white"><c:out value="${fn:length(bookings)}" /></p>
+                <p class="text-3xl font-extrabold text-white">${totalBookings}</p>
             </div>
             <div class="bg-brand-surface p-6 rounded-[2rem] border border-white/5 shadow-xl text-center">
                 <h2 class="text-text-gray text-[16px] font-bold uppercase tracking-widest mb-2">Active Sessions</h2>
-                <p class="text-3xl font-extrabold text-green-400">
-                    <c:set var="count" value="0" />
-                    <c:forEach var="b" items="${bookings}">
-                        <c:if test="${b.paymentStatus == 'PAID' or b.paymentStatus == 'LINK_SENT'}">
-                            <c:set var="count" value="${count + 1}" />
-                        </c:if>
-                    </c:forEach>
-                    ${count}
-                </p>
+                <p class="text-3xl font-extrabold text-green-400">${activeSessions}</p>
             </div>
             <div class="bg-brand-surface p-6 rounded-[2rem] border border-white/5 shadow-xl text-center">
                 <h2 class="text-text-gray text-[16px] font-bold uppercase tracking-widest mb-2">Pending Actions</h2>
-                <p class="text-3xl font-extrabold text-yellow-400">
-                    <c:set var="pcount" value="0" />
-                    <c:forEach var="b" items="${bookings}">
-                        <c:if test="${b.paymentStatus == 'PENDING'}">
-                            <c:set var="pcount" value="${pcount + 1}" />
-                        </c:if>
-                    </c:forEach>
-                    ${pcount}
-                </p>
+                <p class="text-3xl font-extrabold text-yellow-400">${pendingCount}</p>
             </div>
         </section>
 
         <!-- Bookings Table -->
         <section class="bg-brand-surface rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
+
+            <!-- Table Header -->
+            <div class="flex justify-between items-center px-8 py-5 border-b border-white/5 bg-white/[0.02]">
+                <div>
+                    <h2 class="text-lg font-bold text-white">My Bookings</h2>
+                    <p class="text-xs text-text-gray mt-1">
+                        Showing
+                        <span class="text-white font-semibold">${currentPage * pageSize + 1}</span>
+                        –
+                        <span class="text-white font-semibold">
+                            <c:choose>
+                                <c:when test="${(currentPage + 1) * pageSize > totalBookings}">${totalBookings}</c:when>
+                                <c:otherwise>${(currentPage + 1) * pageSize}</c:otherwise>
+                            </c:choose>
+                        </span>
+                        of
+                        <span class="text-white font-semibold">${totalBookings}</span> bookings
+                    </p>
+                </div>
+            </div>
+
             <div class="overflow-x-auto">
                 <table class="custom-table w-full min-w-[1000px]">
                     <thead>
@@ -183,7 +208,9 @@
                     <tbody class="text-sm">
                         <c:forEach var="booking" items="${bookings}" varStatus="loop">
                             <tr>
-                                <td class="text-text-gray font-semibold">${loop.index + 1}</td>
+                                <td class="text-text-gray font-semibold">
+                                    ${currentPage * pageSize + loop.index + 1}
+                                </td>
                                 <td>
                                     <div class="font-bold text-white">${booking.slot.tutor.name}</div>
                                     <div class="text-[11px] text-text-gray mt-1 font-normal">Native Tutor</div>
@@ -270,6 +297,43 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination Controls -->
+            <c:if test="${totalPages > 1}">
+                <div class="flex items-center justify-between px-8 py-5 border-t border-white/5">
+
+                    <!-- Prev -->
+                    <a href="<c:url value='/user/dashboard?page=${currentPage - 1}'/>"
+                       class="page-btn ${currentPage == 0 ? 'disabled' : ''}">
+                        ← Prev
+                    </a>
+
+                    <!-- Page Numbers -->
+                    <div class="flex gap-1.5">
+                        <c:forEach begin="0" end="${totalPages - 1}" var="i">
+                            <c:choose>
+                                <c:when test="${i == 0 || i == totalPages - 1 || (i >= currentPage - 2 && i <= currentPage + 2)}">
+                                    <a href="<c:url value='/user/dashboard?page=${i}'/>"
+                                       class="page-btn ${i == currentPage ? 'active' : ''}">
+                                        ${i + 1}
+                                    </a>
+                                </c:when>
+                                <c:when test="${i == currentPage - 3 || i == currentPage + 3}">
+                                    <span class="page-btn" style="pointer-events:none;">…</span>
+                                </c:when>
+                            </c:choose>
+                        </c:forEach>
+                    </div>
+
+                    <!-- Next -->
+                    <a href="<c:url value='/user/dashboard?page=${currentPage + 1}'/>"
+                       class="page-btn ${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                        Next →
+                    </a>
+
+                </div>
+            </c:if>
+
         </section>
     </main>
 </body>
