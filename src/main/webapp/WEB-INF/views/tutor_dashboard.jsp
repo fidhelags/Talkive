@@ -121,6 +121,26 @@
             transition: all 0.2s;
         }
         .delete-btn:hover { background: rgba(248,113,113,0.1); }
+
+        /* Pagination */
+        .page-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            padding: 0 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            color: #94a3b8;
+            background: rgba(255,255,255,0.05);
+        }
+        .page-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+        .page-btn.active { background: #f97316; color: white; }
+        .page-btn.disabled { opacity: 0.3; pointer-events: none; }
     </style>
 </head>
 
@@ -168,24 +188,15 @@
             </div>
         </c:if>
 
+        <!-- Stats Cards -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <div class="card text-center">
                 <h2 class="text-text-gray text-xs font-bold uppercase tracking-widest mb-3">Total Bookings</h2>
-                <p class="text-5xl font-extrabold text-white">
-                    <c:choose>
-                        <c:when test="${bookings != null}">${bookings.size()}</c:when>
-                        <c:otherwise>0</c:otherwise>
-                    </c:choose>
-                </p>
+                <p class="text-5xl font-extrabold text-white">${totalBookings}</p>
             </div>
             <div class="card text-center">
                 <h2 class="text-text-gray text-xs font-bold uppercase tracking-widest mb-3">Active Slots</h2>
-                <p class="text-5xl font-extrabold text-brand-orange">
-                    <c:choose>
-                        <c:when test="${slots != null}">${slots.size()}</c:when>
-                        <c:otherwise>0</c:otherwise>
-                    </c:choose>
-                </p>
+                <p class="text-5xl font-extrabold text-brand-orange">${totalSlots}</p>
             </div>
             <div class="card text-center">
                 <h2 class="text-text-gray text-xs font-bold uppercase tracking-widest mb-3">Sessions Done</h2>
@@ -198,10 +209,26 @@
             </div>
         </section>
 
+        <!-- Slots Table -->
         <section class="bg-brand-surface rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
 
             <div class="flex justify-between items-center px-8 py-6 border-b border-white/5 bg-white/[0.02]">
-                <h2 class="text-xl font-bold">Your Schedule Slots</h2>
+                <div>
+                    <h2 class="text-xl font-bold">Your Schedule Slots</h2>
+                    <p class="text-xs text-text-gray mt-1">
+                        Showing
+                        <span class="text-white font-semibold">${currentPage * pageSize + 1}</span>
+                        –
+                        <span class="text-white font-semibold">
+                            <c:choose>
+                                <c:when test="${(currentPage + 1) * pageSize > totalSlots}">${totalSlots}</c:when>
+                                <c:otherwise>${(currentPage + 1) * pageSize}</c:otherwise>
+                            </c:choose>
+                        </span>
+                        of
+                        <span class="text-white font-semibold">${totalSlots}</span> slots
+                    </p>
+                </div>
                 <div class="flex gap-3">
                     <button onclick="toggleModal('addSlotModal')"
                             class="bg-brand-orange/10 text-brand-orange px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-brand-orange hover:text-white transition-all">
@@ -232,7 +259,9 @@
                     <tbody class="text-sm">
                         <c:forEach var="slot" items="${slots}" varStatus="loop">
                             <tr>
-                                <td class="text-text-gray font-semibold">${loop.index + 1}</td>
+                                <td class="text-text-gray font-semibold">
+                                    ${currentPage * pageSize + loop.index + 1}
+                                </td>
                                 <td>
                                     <div class="font-semibold text-white">${slot.date}</div>
                                     <div class="text-[11px] text-text-gray mt-1">${slot.startTime} - ${slot.endTime}</div>
@@ -297,6 +326,44 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Pagination Controls -->
+            <c:if test="${totalPages > 1}">
+                <div class="flex items-center justify-between px-8 py-5 border-t border-white/5">
+
+                    <!-- Prev -->
+                    <a href="<c:url value='/tutor/dashboard?page=${currentPage - 1}'/>"
+                       class="page-btn ${currentPage == 0 ? 'disabled' : ''}">
+                        ← Prev
+                    </a>
+
+                    <!-- Page Numbers -->
+                    <div class="flex gap-1.5">
+                        <c:forEach begin="0" end="${totalPages - 1}" var="i">
+                            <%-- Show first, last, current, and neighbours; others as ellipsis --%>
+                            <c:choose>
+                                <c:when test="${i == 0 || i == totalPages - 1 || (i >= currentPage - 2 && i <= currentPage + 2)}">
+                                    <a href="<c:url value='/tutor/dashboard?page=${i}'/>"
+                                       class="page-btn ${i == currentPage ? 'active' : ''}">
+                                        ${i + 1}
+                                    </a>
+                                </c:when>
+                                <c:when test="${i == currentPage - 3 || i == currentPage + 3}">
+                                    <span class="page-btn" style="pointer-events:none;">…</span>
+                                </c:when>
+                            </c:choose>
+                        </c:forEach>
+                    </div>
+
+                    <!-- Next -->
+                    <a href="<c:url value='/tutor/dashboard?page=${currentPage + 1}'/>"
+                       class="page-btn ${currentPage >= totalPages - 1 ? 'disabled' : ''}">
+                        Next →
+                    </a>
+
+                </div>
+            </c:if>
+
         </section>
     </main>
 
@@ -316,7 +383,7 @@
                     </div>
                     <div>
                         <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Duration</label>
-                        <select name="duration" id="durationSelect" 
+                        <select name="duration" id="durationSelect"
                             class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
                             required>
                             <option value="30">30 Min</option>
@@ -332,7 +399,7 @@
                 </div>
                 <div>
                     <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Level</label>
-                    <select name="level" 
+                    <select name="level"
                         class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
                         required>
                         <option value="Beginner">Beginner</option>
@@ -342,7 +409,7 @@
                 </div>
                 <div>
                     <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Lesson Type</label>
-                    <select name="lessonType" 
+                    <select name="lessonType"
                         class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
                         required>
                         <option value="Conversation">Conversation</option>
@@ -395,7 +462,7 @@
                     </div>
                     <div>
                         <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Duration</label>
-                        <select name="duration" id="batchDuration" 
+                        <select name="duration" id="batchDuration"
                             class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
                             required>
                             <option value="30">30 Min</option>
@@ -411,7 +478,7 @@
                 </div>
                 <div>
                     <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Level</label>
-                    <select name="level" 
+                    <select name="level"
                         class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
                         required>
                         <option value="Beginner">Beginner</option>
@@ -421,7 +488,7 @@
                 </div>
                 <div>
                     <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Lesson Type</label>
-                    <select name="lessonType" 
+                    <select name="lessonType"
                         class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
                         required>
                         <option value="Conversation">Conversation</option>
@@ -461,11 +528,7 @@
 
                 <div>
                     <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Date</label>
-                    <input type="date"
-                        name="date"
-                        id="editDate"
-                        class="input-field w-full [color-scheme:dark]"
-                        required>
+                    <input type="date" name="date" id="editDate" class="input-field w-full [color-scheme:dark]" required>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 items-end">
@@ -476,11 +539,9 @@
 
                     <div class="relative">
                         <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Duration</label>
-
                         <select name="duration" id="editDuration"
                             class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
                             required>
-
                             <option value="30">30 Min</option>
                             <option value="45">45 Min</option>
                             <option value="60">60 Min</option>
@@ -490,14 +551,10 @@
                 </div>
 
                 <div>
-                    <label class="text-xs font-bold mb-1 block uppercase"
-                        style="color:rgba(249,115,22,0.6)">
+                    <label class="text-xs font-bold mb-1 block uppercase" style="color:rgba(249,115,22,0.6)">
                         End Time (Auto)
                     </label>
-                    <input type="time" name="endTime" id="editEndTime"
-                        class="input-field"
-                        style="opacity:0.6"
-                        readonly>
+                    <input type="time" name="endTime" id="editEndTime" class="input-field" style="opacity:0.6" readonly>
                 </div>
 
                 <div>
@@ -513,7 +570,7 @@
 
                 <div>
                     <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Lesson Type</label>
-                    <select name="lessonType" id="editLessonType" 
+                    <select name="lessonType" id="editLessonType"
                         class="input-field appearance-none pr-12 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22/%3E%3C/svg%3E')] bg-[length:1.1rem] bg-[right_1rem_center] bg-no-repeat"
                         required>
                         <option value="Conversation">Conversation</option>
@@ -529,25 +586,19 @@
 
                 <div>
                     <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Price (IDR)</label>
-                    <input type="number" name="price" id="editPrice"
-                        class="input-field"
-                        required min="0" step="1000">
+                    <input type="number" name="price" id="editPrice" class="input-field" required min="0" step="1000">
                 </div>
 
                 <div>
                     <label class="text-xs font-bold text-text-gray mb-1 block uppercase">Description</label>
-                    <textarea name="description" id="editDescription"
-                        rows="2"
-                        class="input-field resize-none"></textarea>
+                    <textarea name="description" id="editDescription" rows="2" class="input-field resize-none"></textarea>
                 </div>
 
                 <div class="flex gap-3 pt-4">
-                    <button type="button"
-                        onclick="toggleModal('editSlotModal')"
+                    <button type="button" onclick="toggleModal('editSlotModal')"
                         class="flex-1 px-4 py-3 rounded-xl bg-white/5 font-bold hover:bg-white/10 transition-all">
                         Cancel
                     </button>
-
                     <button type="submit"
                         class="flex-1 px-4 py-3 rounded-xl bg-brand-orange font-bold hover:bg-orange-600 transition-all">
                         Update Slot

@@ -50,14 +50,15 @@ public class TutorController {
     private FCMService fcmService;
 
     @GetMapping("/dashboard")
-    public String dashboard(HttpSession session, Model model) {
+    public String dashboard(HttpSession session, Model model,
+                            @RequestParam(defaultValue = "0") int page) {
         Tutor tutor = (Tutor) session.getAttribute("loggedInUser");
         if (tutor == null) {
             return "redirect:/login";
         }
 
-        List<Slot> slots = slotService.findByTutor(tutor);
-        List<Booking> bookings = slots.stream()
+        List<Slot> allSlots = slotService.findByTutor(tutor);
+        List<Booking> bookings = allSlots.stream()
                 .flatMap(s -> s.getBookings() != null ? s.getBookings().stream() : Stream.empty())
                 .toList();
 
@@ -66,10 +67,26 @@ public class TutorController {
                 .mapToInt(b -> 1)
                 .sum();
 
+        // --- Pagination ---
+        int pageSize = 10;
+        int totalSlots = allSlots.size();
+        int totalPages = (int) Math.ceil((double) totalSlots / pageSize);
+        if (page < 0) page = 0;
+        if (totalPages > 0 && page >= totalPages) page = totalPages - 1;
+
+        int fromIndex = page * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalSlots);
+        List<Slot> pagedSlots = totalSlots > 0 ? allSlots.subList(fromIndex, toIndex) : List.of();
+
         model.addAttribute("tutor", tutor);
-        model.addAttribute("slots", slots);
+        model.addAttribute("slots", pagedSlots);
         model.addAttribute("bookings", bookings);
         model.addAttribute("completedSessionsCount", completedSessionsCount);
+        model.addAttribute("totalSlots", totalSlots);
+        model.addAttribute("totalBookings", bookings.size());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("pageSize", pageSize);
 
         return "tutor_dashboard";
     }
@@ -87,7 +104,7 @@ public class TutorController {
         model.addAttribute("tutor", tutor);
         model.addAttribute("bookings", bookings);
 
-        return "booking_list"; 
+        return "booking_list";
     }
 
     @PostMapping("/slots")
@@ -114,7 +131,6 @@ public class TutorController {
         return "redirect:/tutor/dashboard?success=slot_added";
     }
 
-
     @GetMapping("/bookings/{id}/send-link")
     public String sendMeetingLinkForm(@PathVariable Long id, HttpSession session, Model model) {
         Tutor tutor = (Tutor) session.getAttribute("loggedInUser");
@@ -125,7 +141,7 @@ public class TutorController {
         Optional<Booking> bookingOpt = bookingService.findById(id);
         if (bookingOpt.isPresent()) {
             model.addAttribute("booking", bookingOpt.get());
-            return "send_link_form"; 
+            return "send_link_form";
         } else {
             return "redirect:/tutor/dashboard";
         }
@@ -154,9 +170,7 @@ public class TutorController {
         booking.setPaymentStatus(Booking.PaymentStatus.LINK_SENT);
         bookingService.saveBooking(booking);
 
-        // Kirim notif ke student
         User student = booking.getUser();
-        
         if (student.getFcmToken() != null) {
             fcmService.sendNotification(
                 student.getFcmToken(),
@@ -167,7 +181,6 @@ public class TutorController {
 
         return "redirect:/tutor/bookings?success=link_sent";
     }
-
 
     @GetMapping("/profile")
     public String profile(HttpSession session, Model model) {
@@ -186,14 +199,10 @@ public class TutorController {
         Tutor existing = tutorService.findById(tutor.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Tutor not found"));
 
-        // =========================
-        // EMAIL VALIDATION (CROSS ROLE)
-        // =========================
         String newEmail = tutor.getEmail();
         String oldEmail = existing.getEmail();
 
         if (newEmail != null && !newEmail.equalsIgnoreCase(oldEmail)) {
-
             boolean emailUsedByUser = userService.existsByEmail(newEmail);
             boolean emailUsedByTutor = tutorService.existsByEmail(newEmail);
 
@@ -255,8 +264,6 @@ public class TutorController {
         return "redirect:/tutor/dashboard?success=slot_updated";
     }
 
-
-
     @GetMapping("/slots/delete/{id}")
     public String deleteSlot(@PathVariable Long id, HttpSession session) {
 
@@ -286,26 +293,21 @@ public class TutorController {
         slotService.deleteById(id);
         return "redirect:/tutor/dashboard?success=slot_deleted";
     }
-    
-     @GetMapping("/profile/delete")
+
+    @GetMapping("/profile/delete")
     public String deleteProfile(HttpSession session) {
         Tutor tutor = (Tutor) session.getAttribute("loggedInUser");
 
-        // Jika user tidak login, redirect ke login
         if (tutor == null) {
             return "redirect:/auth/login";
         }
 
-        // Hapus user dari database
         tutorService.deleteById(tutor.getId());
-
-        // Hapus session
         session.invalidate();
 
-        // Redirect ke login page dengan pesan sukses
         return "redirect:/auth/login?deleted=true";
     }
-    
+
     @PostMapping("/slots/range")
     public String addSlotsRange(
             @RequestParam LocalDate startDate,
@@ -324,7 +326,6 @@ public class TutorController {
             return "redirect:/login";
         }
 
-        // ❌ validasi jam (cukup sekali)
         if (!endTime.isAfter(startTime)) {
             return "redirect:/tutor/dashboard?error=invalid_time_range";
         }
@@ -335,7 +336,6 @@ public class TutorController {
 
             LocalDateTime slotEnd = LocalDateTime.of(date, endTime);
 
-            // ❌ skip slot yang sudah lewat
             if (slotEnd.isBefore(LocalDateTime.now())) {
                 date = date.plusDays(1);
                 continue;
@@ -359,6 +359,4 @@ public class TutorController {
 
         return "redirect:/tutor/dashboard?success=slot_range_added";
     }
-
-
 }
