@@ -19,6 +19,9 @@ class _AvailableSlotPageState extends State<AvailableSlotPage> {
   bool _isLoading = true;
   bool _isBooking = false;
 
+  int _currentPage = 1;
+  final int _itemsPerPage = 5;
+
   // Filter state
   String _selectedLanguage = '';
   String _selectedLevel = '';
@@ -54,7 +57,10 @@ class _AvailableSlotPageState extends State<AvailableSlotPage> {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
-        setState(() => _slots = List<Map<String, dynamic>>.from(data));
+        setState(() {
+          _slots = List<Map<String, dynamic>>.from(data);
+          _currentPage = 1;
+        });
       }
     } catch (e) {
       debugPrint('Error: $e');
@@ -460,6 +466,26 @@ class _AvailableSlotPageState extends State<AvailableSlotPage> {
         );
   }
 
+  List<Map<String, dynamic>> get _paginatedSlots {
+  final startIndex = (_currentPage - 1) * _itemsPerPage;
+
+  if (startIndex >= _slots.length) {
+    return [];
+  }
+
+  final endIndex = startIndex + _itemsPerPage;
+
+  return _slots.sublist(
+    startIndex,
+    endIndex > _slots.length ? _slots.length : endIndex,
+  );
+}
+
+int get _totalPages {
+  if (_slots.isEmpty) return 1;
+  return (_slots.length / _itemsPerPage).ceil();
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -602,11 +628,11 @@ class _AvailableSlotPageState extends State<AvailableSlotPage> {
                             parent: BouncingScrollPhysics(),
                           ),
                           padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                          itemCount: _slots.length,
+                          itemCount: _paginatedSlots.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 12),
                           itemBuilder: (context, index) {
-                            final slot = _slots[index];
+                            final slot = _paginatedSlots[index];
                             final tutor =
                                 slot['tutor'] as Map<String, dynamic>?;
                             return Container(
@@ -773,6 +799,63 @@ class _AvailableSlotPageState extends State<AvailableSlotPage> {
                         ),
                       ),
                     ),
+            ),
+            if (_slots.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 12,
+                horizontal: 24,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: _currentPage > 1
+                        ? () {
+                            setState(() {
+                              _currentPage--;
+                            });
+                          }
+                        : null,
+                    icon: const Icon(
+                      Icons.chevron_left,
+                      color: Colors.white,
+                    ),
+                  ),
+
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'Page $_currentPage of $_totalPages',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+
+                  IconButton(
+                    onPressed: _currentPage < _totalPages
+                        ? () {
+                            setState(() {
+                              _currentPage++;
+                            });
+                          }
+                        : null,
+                    icon: const Icon(
+                      Icons.chevron_right,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

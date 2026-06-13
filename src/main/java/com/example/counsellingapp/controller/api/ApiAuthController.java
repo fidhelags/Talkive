@@ -103,4 +103,44 @@ public class ApiAuthController {
         response.put("message", "Registrasi gagal. Silakan coba lagi.");
         return ResponseEntity.status(400).body(response);
     }
+    
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, Object>> resetPassword(
+            @RequestBody Map<String, String> body) {
+
+        String email = body.get("email");
+        String newPassword = body.get("newPassword");
+
+        Map<String, Object> response = new HashMap<>();
+
+        // Cari di User
+        Optional<User> userOpt = userService.findByEmail(email);
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userService.saveUser(user);
+
+            response.put("success", true);
+            response.put("message", "Password berhasil diubah.");
+            return ResponseEntity.ok(response);
+        }
+
+        // Cari di Tutor
+        Optional<Tutor> tutorOpt = tutorService.findByEmail(email);
+
+        if (tutorOpt.isPresent()) {
+            Tutor tutor = tutorOpt.get();
+            tutor.setPassword(passwordEncoder.encode(newPassword));
+            tutorService.saveTutor(tutor);
+
+            response.put("success", true);
+            response.put("message", "Password berhasil diubah.");
+            return ResponseEntity.ok(response);
+        }
+
+        response.put("success", false);
+        response.put("message", "Email tidak ditemukan.");
+        return ResponseEntity.status(404).body(response);
+    }
 }

@@ -7,6 +7,7 @@ import 'pages/main_navigation.dart';
 import 'pages/splash_screen.dart';
 import 'services/session_service.dart';
 import 'services/notification_service.dart';
+import 'pages/forgot_password_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,7 @@ class TalkiveApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
         '/landing': (context) => const LandingPage(),
+        '/forgot-password': (context) => const ForgotPasswordPage(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/dashboard') {

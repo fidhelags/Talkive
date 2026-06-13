@@ -290,6 +290,22 @@ class _LoginPageState extends State<LoginPage> {
 
                           const SizedBox(height: 30),
 
+                          Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/forgot-password');
+                            },
+                            child: const Text(
+                              'Forgot Password?',
+                              style: TextStyle(
+                                color: orange,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+
                           // LOGIN BUTTON
                           SizedBox(
                             width: double.infinity,
